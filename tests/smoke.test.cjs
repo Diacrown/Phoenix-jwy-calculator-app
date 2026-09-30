@@ -49,7 +49,9 @@ const readBuf = blob => new Promise(res => { const fr = new w.FileReader(); fr.o
   const loc = [...d.querySelectorAll("select")].find(s => [...s.options].some(o => o.value === "WSSY"));
   ok("location has only WSSY, 0% duty", loc.options.length === 1 && loc.options[0].textContent === "WSSY · AUD · 0% duty");
   ok("breakdown tiles are Metal, Casting, Diamonds only", [...d.querySelectorAll(".metric-label")].map(e => e.textContent).join("|") === "Metal|Casting · Tier 1|Diamonds");
-  ok("two total tiles", d.querySelectorAll(".totals-grid .tot").length === 2);
+  ok("three total tiles: gross USD, AUD, USD", d.querySelectorAll(".totals-grid .tot").length === 3);
+  const curSel = d.querySelector('select[aria-label="PDF currency"]');
+  ok("PDF currency selector offers Normal, AUD only, USD only, default USD only", !!curSel && [...curSel.options].map(o => o.value).join() === "both,local,usd" && curSel.value === "usd");
   console.log("-- tiers");
   q('.tier[data-tier="Tier 3"]').click();
   ok("Tier 3 -> $1,669", text().includes("Casting · Tier 3") && text().includes("$1,669.00"));

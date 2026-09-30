@@ -115,10 +115,19 @@ function pdfMoney(n) { return "$" + Number(n || 0).toLocaleString("en-US", { min
 function pdfLocal(n, cur) { return (cur === "AUD" ? "AUD $" : cur === "NZD" ? "NZD $" : "$") + Number(n || 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 function pdfSafe(t) { return String(t == null ? "" : t).replace(/[–—]/g, "-").replace(/[^\x20-\x7E -ÿ]/g, "?"); }
 
+/* "usd" | "local" | "both". A location whose currency is USD has only one figure, so it always shows as USD. */
+function pdfCurrencyMode(job, Q) {
+  if (Q.cur === "USD") return "usd";
+  const m = job.currency;
+  return m === "both" || m === "local" ? m : "usd";
+}
+
 /* ctx = { job, Q, images: [dataUrl], alloyLabel(metalObj), variant } */
 function buildQuotePdf(ctx) {
   const { jsPDF } = window.jspdf;
   const { job, Q, variant } = ctx, full = variant === "full", anyPrice = variant !== "noPrice";
+  // Currency shown on the PDF: "usd" (default, USD only), "local" (AUD only), "both" (Normal)
+  const cmode = pdfCurrencyMode(job, Q);
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const W = 210, M = 14;
   const title = anyPrice ? (full ? "Quotation" : "Quotation Order") : "Production Sheet";
@@ -186,14 +195,21 @@ function buildQuotePdf(ctx) {
     doc.setFontSize(9.5);
     comp.forEach(([a, b]) => { doc.setTextColor(...PDF_PLUM); doc.setFont("helvetica", "normal"); doc.text(pdfSafe(a), 120, y); doc.text(pdfMoney(b), W - M, y, { align: "right" }); y += 6; });
     doc.setDrawColor(...PDF_ROSE); doc.line(120, y - 3, W - M, y - 3);
-    doc.setFont("helvetica", "bold"); doc.text("Gross total (USD)", 120, y + 2); doc.text(pdfMoney(Q.gross), W - M, y + 2, { align: "right" }); y += 10;
+    if (cmode !== "local") { doc.setFont("helvetica", "bold"); doc.text("Gross total (USD)", 120, y + 2); doc.text(pdfMoney(Q.gross), W - M, y + 2, { align: "right" }); y += 10; }
+    else y += 2;
   }
   if (anyPrice) {
-    need(20);
-    doc.setFillColor(...PDF_ROSE); doc.roundedRect(110, y, W - M - 110, 14, 2, 2, "F");
-    doc.setTextColor(255, 255, 255); doc.setFontSize(9); doc.setFont("helvetica", "normal"); doc.text(pdfSafe("Total - " + Q.cur), 114, y + 5.5);
-    doc.setFont("helvetica", "bold"); doc.setFontSize(13); doc.text(pdfSafe(Q.finalLocal == null ? "no rate" : pdfLocal(Q.finalLocal, Q.cur)), W - M - 4, y + 10, { align: "right" });
-    y += 22;
+    const boxes = [];
+    if (cmode !== "local") boxes.push(["Total - USD", pdfMoney(Q.finalUsd)]);
+    if (cmode !== "usd") boxes.push(["Total - " + Q.cur, Q.finalLocal == null ? "no rate" : pdfLocal(Q.finalLocal, Q.cur)]);
+    boxes.forEach(([lab, val]) => {
+      need(20);
+      doc.setFillColor(...PDF_ROSE); doc.roundedRect(110, y, W - M - 110, 14, 2, 2, "F");
+      doc.setTextColor(255, 255, 255); doc.setFontSize(9); doc.setFont("helvetica", "normal"); doc.text(pdfSafe(lab), 114, y + 5.5);
+      doc.setFont("helvetica", "bold"); doc.setFontSize(13); doc.text(pdfSafe(val), W - M - 4, y + 10, { align: "right" });
+      y += 18;
+    });
+    y += 4;
   }
   doc.setTextColor(...PDF_PLUM); doc.setFont("helvetica", "normal"); doc.setFontSize(9);
   if (job.remarks) { need(16); doc.setFont("helvetica", "bold"); doc.text("Remarks", M, y); doc.setFont("helvetica", "normal"); const t = doc.splitTextToSize(pdfSafe(job.remarks), W - 2 * M); doc.text(t, M, y + 5); y += 6 + t.length * 4.2; }

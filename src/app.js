@@ -39,7 +39,7 @@
   const blankMetal = () => ({ metal: "", color: "", grams: "" });
   function jobBase() {
     return { by: "", loc: "WSSY", date: todayStr(), jobNo: "", itemNo: "", itemSize: "", customer: "", render: "", itemType: "", subCategory: "", tier: "Tier 1",
-      metals: [blankMetal(), blankMetal()], lines: Array.from({ length: 5 }, blankLine), stage: "Q1", variant: "full", override: "", extraName: "", extraAmt: "", remarks: "" };
+      metals: [blankMetal(), blankMetal()], lines: Array.from({ length: 5 }, blankLine), stage: "Q1", variant: "full", currency: "usd", override: "", overrideUsd: "", extraName: "", extraAmt: "", remarks: "" };
   }
   function sampleJob() {
     const mk = (type, code, extra) => Object.assign(blankLine(), { type, idx: idxOf(code), shape: CATALOG[idxOf(code)][1] }, extra);
@@ -491,6 +491,15 @@
     return l;
   }
   const finalText = q => q.finalLocal == null ? "no rate" : localMoney(q.finalLocal, q.cur);
+  const usdText = q => "USD " + money(q.finalUsd);
+  // Which totals the preview, text summary and PDF carry: "usd" (default), "local" (AUD only), "both" (Normal)
+  const curMode = (j, q) => q.cur === "USD" ? "usd" : (j.currency === "both" || j.currency === "local" ? j.currency : "usd");
+  function totalRows(j, q) {
+    const m = curMode(j, q), r = [];
+    if (m !== "local") r.push(["Total · USD", usdText(q)]);
+    if (m !== "usd") r.push(["Total · " + q.cur, finalText(q)]);
+    return r;
+  }
   const metalsText = () => Q.parts.map((p, i) => ({ p, m: S.job.metals[i] })).filter(x => x.p.grams > 0).map(x => alloyLabel(x.m) + " " + fmt(x.p.grams, 3) + " g").join("  +  ");
   function sheetNode() {
     const j = S.job, q = Q, v = j.variant, full = v === "full", anyPrice = v !== "noPrice";
@@ -505,9 +514,9 @@
     const kv = (k, val) => h("div", null, h("span", null, k), val || "—");
     let totals = null;
     if (full) totals = h("div", { class: "tot-list" }, componentList(q, j).map(([a, b]) => h("div", null, h("span", null, a), h("span", { class: "mono" }, money(b)))),
-      h("div", null, h("span", null, "Gross total · USD"), h("span", { class: "mono" }, money(q.gross))),
-      h("div", { class: "big" }, h("span", null, q.locCode + " total · " + q.cur), h("span", { class: "mono" }, finalText(q))));
-    else if (v === "priceOnly") totals = h("div", { class: "tot-list" }, h("div", { class: "big" }, h("span", null, "Total · " + q.cur), h("span", { class: "mono" }, finalText(q))));
+      curMode(j, q) === "local" ? null : h("div", null, h("span", null, "Gross total · USD"), h("span", { class: "mono" }, money(q.gross))),
+      totalRows(j, q).map(([a, b]) => h("div", { class: "big" }, h("span", null, a), h("span", { class: "mono" }, b))));
+    else if (v === "priceOnly") totals = h("div", { class: "tot-list" }, totalRows(j, q).map(([a, b]) => h("div", { class: "big" }, h("span", null, a), h("span", { class: "mono" }, b))));
     return h("div", { class: "sheet" },
       h("div", { class: "letterhead" }, h("div", null, h("div", { class: "tag" }, "Phoenix jewellery"), h("h3", null, title)),
         h("div", { class: "meta" }, h("div", null, "Job ", h("b", null, j.jobNo || "—"), "  ·  Item ", h("b", null, j.itemNo || "—")), h("div", null, "Quote ", h("b", null, j.stage || "Q1"), "  ·  ", j.date))),
@@ -520,8 +529,8 @@
     const L = [(v === "noPrice" ? "PRODUCTION SHEET" : "QUOTATION") + "  Job " + (j.jobNo || "-") + "  Item " + (j.itemNo || "-") + "  " + (j.stage || "Q1"),
       "Customer " + (j.customer || "-") + "   Location " + q.locCode + "   Date " + j.date, "Metal: " + (metalsText() || "-"), "Stones:"];
     stoneRows().forEach((x, k) => L.push("  " + (k + 1) + ". " + x.lc.type + " " + shapeSizeText(x.lc) + " | " + (full ? (x.lc.quality || "-") : (x.L.proposed || "-")) + " | " + x.lc.pcs + " pcs | " + fmt(x.lc.total, 3) + " ct" + (full ? " | " + money(x.lc.ppc) + "/ct | " + money(x.lc.amount) : "")));
-    if (full) { componentList(q, j).forEach(([a, b]) => L.push(a + ": " + money(b))); L.push("Gross total (USD): " + money(q.gross)); L.push(q.locCode + " total (" + q.cur + "): " + finalText(q)); L.push("SSP: " + q.code); }
-    else if (v === "priceOnly") L.push("Total (" + q.cur + "): " + finalText(q));
+    if (full) { componentList(q, j).forEach(([a, b]) => L.push(a + ": " + money(b))); if (curMode(j, q) !== "local") L.push("Gross total (USD): " + money(q.gross)); totalRows(j, q).forEach(([a, b]) => L.push(a.replace(" · ", " (") + "): " + b)); L.push("SSP: " + q.code); }
+    else if (v === "priceOnly") totalRows(j, q).forEach(([a, b]) => L.push(a.replace(" · ", " (") + "): " + b));
     if (j.remarks) L.push("Remarks: " + j.remarks);
     return L.join("\n");
   }
@@ -632,7 +641,7 @@
       const ex = await ref.get();
       if (ex.exists) throw new Error("Please update your quotation stage before saving -- " + (j.stage || "this stage") + " already exists for Job " + j.jobNo + " / Item " + j.itemNo + ".");
     }
-    const doc = { jobNo: j.jobNo || "", itemNo: j.itemNo || "", stage: j.stage || "", customer: j.customer || "", designer: j.by || "", date: j.date || "", tier: j.tier, gross: Q.gross, cur: Q.cur, total: Q.finalLocal == null ? 0 : Q.finalLocal, savedAt: Date.now(), filenameBase: filenameBase(), json: JSON.stringify(snapshot()) };
+    const doc = { jobNo: j.jobNo || "", itemNo: j.itemNo || "", stage: j.stage || "", customer: j.customer || "", designer: j.by || "", date: j.date || "", tier: j.tier, gross: Q.gross, cur: curMode(j, Q) === "local" ? Q.cur : "USD", total: curMode(j, Q) === "local" ? (Q.finalLocal == null ? 0 : Q.finalLocal) : Q.finalUsd, savedAt: Date.now(), filenameBase: filenameBase(), json: JSON.stringify(snapshot()) };
     if (db.wantsPdf) doc.pdfBase64 = toBase64(makePdf("full").output("arraybuffer")); // deployed database archives the PDF next to the JSON
     await ref.set(doc);
     ui.synced = null;
@@ -664,6 +673,8 @@
     const stage = bind(h("input", { class: "inp-sm", style: "width:52px;text-align:center;font-weight:600", placeholder: "Q1", id: uid("stage"), "aria-label": "Quote stage", title: "Quote stage (Q1, Q2, Revised, etc.). Used in file names and every save action." }), j, "stage");
     const variantOpts = () => [["full", "Full price"], ["priceOnly", "Price only"], ["noPrice", "No price"]].map(([v, t]) => h("option", { value: v }, t));
     const variant = h("select", { class: "inp-sm", style: "width:100px", id: uid("variant"), "aria-label": "Print variant" }, variantOpts()); bind(variant, j, "variant");
+    const currencySel = h("select", { class: "inp-sm", style: "width:112px", id: uid("currency"), "aria-label": "PDF currency", title: "Currency shown on the printed PDF, preview and email" },
+      [["both", "Normal (AUD + USD)"], ["local", "AUD only"], ["usd", "USD only"]].map(([v, t]) => h("option", { value: v }, t))); bind(currencySel, j, "currency");
     const div = () => h("div", { class: "divider-v" });
     const status = () => h("span", { class: "status-ok", role: "status" });
     const act = (label, busyLabel, fn, cls) => {
@@ -702,7 +713,7 @@
     emailBox.append(to, ev, send, h("button", { class: "small-btn plain", type: "button", "aria-label": "Close email", onclick: () => { emailBox.hidden = true; emailBtn.hidden = false; flash(emSt, "", 0); } }, "×"), emSt);
 
     return h("div", { class: "card" },
-      h("div", { class: "toolbar" }, sectionLabel("05", "Quotes"), stage, div(), variant, dl, dlSt, pv, div(), sync, syncSt, drive, driveSt, gati, gatiSt, emailBtn, emailBox),
+      h("div", { class: "toolbar" }, sectionLabel("05", "Quotes"), stage, div(), variant, currencySel, dl, dlSt, pv, div(), sync, syncSt, drive, driveSt, gati, gatiSt, emailBtn, emailBox),
       h("p", { class: "hint" }, WEB
         ? "Sync to DB saves the PDF and the quote to the team database. Save to Drive uploads the PDF to the shared Drive folder. Email sends the PDF to your customer. The first save or email asks for the team access key."
         : "Sync to DB saves the quote to this page's shared database. Save to Drive and Email use your connected Google Drive and Gmail. Sync to DB, Save to Drive and Email work only when the page is opened from claude.ai."));
@@ -721,17 +732,21 @@
     bk.grid = h("div", { class: "breakup-grid" });
     bk.ov = bind(h("input", { type: "number", step: "1", class: "inp-sm", id: uid("ov"), "aria-label": "Override final price" }), j, "override");
     bk.ovLab = h("span", { class: "lab2" });
-    bk.ovClear = h("button", { class: "small-btn plain", type: "button", onclick: () => { j.override = ""; bk.ov.value = ""; update(); } }, "Clear override");
+    bk.ovU = bind(h("input", { type: "number", step: "1", class: "inp-sm", id: uid("ovu"), "aria-label": "Override final price in USD" }), j, "overrideUsd");
+    bk.ovULab = h("span", { class: "lab2" }, "Override final price (USD)");
+    bk.ovClear = h("button", { class: "small-btn plain", type: "button", onclick: () => { j.override = ""; j.overrideUsd = ""; bk.ov.value = ""; bk.ovU.value = ""; update(); } }, "Clear override");
     bk.exClear = h("button", { class: "small-btn plain", type: "button", onclick: () => { j.extraName = ""; j.extraAmt = ""; bk.exName.value = ""; bk.exAmt.value = ""; update(); } }, "Clear");
     bk.exName = bind(h("input", { type: "text", class: "inp-sm", placeholder: "e.g. Rush fee", style: "width:130px", id: uid("exn"), "aria-label": "Additional charge name" }), j, "extraName");
     bk.exAmt = bind(h("input", { type: "number", step: "1", class: "inp-sm", placeholder: "0.00 USD", style: "width:100px", id: uid("exa"), "aria-label": "Additional charge amount in USD" }), j, "extraAmt");
-    bk.g = h("div", { class: "v" }); bk.l = h("div", { class: "v" }); bk.ll = h("div", { class: "l" }); bk.fx = h("div", { class: "fx" });
+    bk.g = h("div", { class: "v" }); bk.l = h("div", { class: "v" }); bk.ll = h("div", { class: "l" }); bk.u = h("div", { class: "v" }); bk.ul = h("div", { class: "l" }); bk.fx = h("div", { class: "fx" });
     bk.code = h("span", { class: "ssp-code" });
     return h("div", { class: "card" }, sectionLabel("06", "Quote breakdown"), bk.grid, h("div", { class: "divider" }),
-      h("div", { class: "adj" }, bk.ovLab, bk.ov, bk.ovClear, h("div", { class: "divider-v" }), h("span", { class: "lab2" }, "Additional charges"), bk.exName, bk.exAmt, bk.exClear),
+      h("div", { class: "adj" }, bk.ovLab, bk.ov, bk.ovULab, bk.ovU, bk.ovClear, h("div", { class: "divider-v" }), h("span", { class: "lab2" }, "Additional charges"), bk.exName, bk.exAmt, bk.exClear),
       h("div", { class: "totals-grid two" },
         h("div", { class: "tot" }, h("div", { class: "l" }, "Gross total · USD"), bk.g),
         h("div", { class: "tot main" }, bk.ll, bk.l, bk.fx)),
+      h("div", { class: "totals-grid two" },
+        h("div", { class: "tot main" }, bk.ul, bk.u)),
       h("div", { class: "ssp-row" }, h("span", null, "SSP code"), bk.code, h("span", null, "The gross total written with your price code letters.")));
   }
   function paintBreakdown(q) {
@@ -740,7 +755,11 @@
     bk.grid.replaceChildren(...componentList(q, j).map(([label, v]) => h("div", { class: "metric" }, h("div", { class: "metric-tab" }), h("div", { class: "metric-label" }, label), h("div", { class: "metric-value" }, money(v)), h("div", { class: "metric-pct" }, fmt(pct(v), 1) + "% of total"))));
     bk.ovLab.textContent = "Override final price (" + q.cur + ")";
     bk.ov.placeholder = "calculated: " + (q.local == null ? "no rate" : fmt(q.local, 0));
-    bk.ovClear.hidden = !q.hasOverride; bk.exClear.hidden = !(q.extra > 0 || j.extraName);
+    bk.ovU.placeholder = "calculated: " + fmt(q.usd, 0);
+    bk.ovULab.hidden = bk.ovU.hidden = q.cur === "USD";
+    bk.ul.textContent = "Total · USD" + (q.hasOverride || q.hasOverrideUsd ? "  (calculated: " + money(q.usd) + ")" : "");
+    bk.u.textContent = usdText(q);
+    bk.ovClear.hidden = !(q.hasOverride || q.hasOverrideUsd); bk.exClear.hidden = !(q.extra > 0 || j.extraName);
     bk.g.textContent = money(q.gross);
     bk.ll.textContent = q.locCode + " total · " + q.cur + (q.hasOverride ? "  (calculated: " + (q.local == null ? "no rate" : localMoney(q.local, q.cur)) + ")" : "");
     bk.l.textContent = finalText(q);

@@ -85,7 +85,7 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
   btn("Sync to DB").click(); await wait(400);
   await submitKey("team-key-123");
   const rows = await sql`SELECT * FROM phoenix_quotes`;
-  ok("right key: quote saved to Postgres with job/item/stage/customer fields", rows.length === 1 && rows[0].job_no === "s01294" && rows[0].item_no === "B00630" && rows[0].quote_stage === "Q1" && rows[0].tier === "Tier 1" && rows[0].currency === "AUD" && Number(rows[0].total) === 2300, JSON.stringify(rows));
+  ok("right key: quote saved to Postgres with job/item/stage/customer fields", rows.length === 1 && rows[0].job_no === "s01294" && rows[0].item_no === "B00630" && rows[0].quote_stage === "Q1" && rows[0].tier === "Tier 1" && rows[0].currency === "USD" && Number(rows[0].total) === 1610, JSON.stringify(rows));
   const key0 = rows[0].filename_base;
   ok("PDF archived in blob storage next to the JSON", Buffer.from(blobs.get(key0 + "/quote.pdf")).toString("latin1").startsWith("%PDF") && JSON.parse(blobs.get(key0 + "/quote.json")).job.jobNo === "s01294");
   ok("key remembered in this browser", w.localStorage.getItem("phoenix.accessKey") === "team-key-123" && !q(".pk-back"));

@@ -146,8 +146,16 @@ function quote(job, R, CAT) {
   const hasOverride = job.override !== "" && job.override != null && Number.isFinite(ov) && ov > 0;
   const finalLocal = hasOverride ? ov : local;
 
+  // USD total: the gross is already USD, rounded up to the next 5 like the local total.
+  // An override typed in the local currency carries over to USD through the fx rate.
+  const usd = rnd ? roundUp5(gross) : gross;
+  const ovU = parseFloat(job.overrideUsd);
+  const hasOverrideUsd = job.overrideUsd !== "" && job.overrideUsd != null && Number.isFinite(ovU) && ovU > 0;
+  const finalUsd = hasOverrideUsd ? ovU
+    : (hasOverride && rate > 0 ? (rnd ? roundUp5(ov * rate) : ov * rate) : usd);
+
   return {
-    lines, carats, pieces, diamonds, parts, grams, metal, tier, extra, gross, cur, rate, local, hasOverride, finalLocal,
+    lines, carats, pieces, diamonds, parts, grams, metal, tier, extra, gross, cur, rate, local, hasOverride, finalLocal, usd, hasOverrideUsd, finalUsd,
     code: encodeCode(gross, R), locCode: loc ? loc.code : ""
   };
 }

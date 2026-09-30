@@ -56,6 +56,18 @@ eq("AUD 1609 / 0.70 = 2298.57 rounds up to next 5", q.local, 2300);
 eq("SSP code unchanged", q.code, "JIXT");
 eq("roundUp5 exact multiple stays", E.roundUp5(1690), 1690);
 
+console.log("-- USD total alongside AUD");
+q = E.quote(sample(), RR, E.CATALOG);
+eq("USD total = gross 1609 rounded up to 1610", q.usd, 1610);
+eq("final USD without override", q.finalUsd, 1610);
+job = sample(); job.overrideUsd = "1700";
+q = E.quote(job, RR, E.CATALOG);
+eq("USD override wins", q.finalUsd, 1700);
+eq("USD override leaves AUD alone", q.finalLocal, 2300);
+job = sample(); job.override = "2500";
+q = E.quote(job, RR, E.CATALOG);
+eq("AUD override 2500 x 0.70 = 1750 carries to USD", q.finalUsd, 1750);
+
 console.log("-- override, extra charge, USD location");
 job = sample(); job.override = "2500"; job.extraAmt = "50";
 q = E.quote(job, RR, E.CATALOG);
