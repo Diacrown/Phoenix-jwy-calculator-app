@@ -24,11 +24,11 @@ h1,h2,h3,p{margin:0}
 /* top bar */
 .topbar{background:var(--bar);border-bottom:3px solid var(--rose)}
 .topbar-in{max-width:1180px;margin:0 auto;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px 20px;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand{display:flex;align-items:center;gap:16px;min-width:0}
 .logo-box{padding:6px 12px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;flex:none}
 .logo-img{height:42px;width:auto;display:block}
-.brand-title{color:#fff;font:600 15px var(--serif);letter-spacing:.2px}
-.brand-sub{color:var(--bar-text);font-size:11.5px;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:46vw}
+.brand-title{color:#fff;font:700 26px/1.1 var(--serif);letter-spacing:.3px}
+.brand-sub{color:var(--bar-text);font-size:13px;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:46vw}
 .top-actions{display:flex;gap:10px;flex-wrap:wrap}
 .top-btn{display:inline-flex;align-items:center;font-size:12.5px;font-weight:500;color:#fff;background:transparent;border:1px solid var(--bar-line);border-radius:6px;padding:8px 14px;cursor:pointer}
 .top-btn:hover{background:rgba(255,255,255,.07)}
@@ -243,6 +243,8 @@ details.sec>summary{cursor:pointer;color:var(--muted);font-size:11px;letter-spac
 @media (max-width:640px){
   .topbar-in{padding:10px 16px}.shell{padding:12px 16px 28px}.status-bar>div{padding:8px 16px}
   .brand-sub{max-width:60vw}
+  .brand-title{font-size:21px}
+  .brand{gap:12px}
 }
 @media (prefers-reduced-motion:no-preference){.small-btn,.toggle-btn,.btn,.top-btn{transition:background-color .12s,color .12s,border-color .12s}}
 .top-btn.danger,.small-btn.danger{background:var(--amber);border-color:var(--amber);color:#fff}
