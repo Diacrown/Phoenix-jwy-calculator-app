@@ -39,6 +39,7 @@ Browser (dist/index.html)
 | `src/style.css` | Atelier Rose styling, same tokens as JWY |
 | `tools/build.mjs` | Bundles everything into one HTML file |
 | `tools/gen_data.py` | Regenerates `src/data.js` from `data/catalog.tsv` and the rate tables inside it |
+| `assets/logo-white.png` | The Made with Love logo shown in the page header and on every PDF (inlined at build time; `tools/make_logo.py` regenerates it from the original) |
 | `data/catalog.tsv` | The stone catalogue (419 rows) |
 | `netlify/functions/` | `save-quote`, `load-quote`, `search-quotes`, `send-quote-email`, `app-config` |
 | `netlify/lib/quotes.mjs` | The server logic behind those functions (unit-tested) |

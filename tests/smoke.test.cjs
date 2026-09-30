@@ -34,6 +34,8 @@ const readBuf = blob => new Promise(res => { const fr = new w.FileReader(); fr.o
 (async () => {
   ok("no script errors on load", errors.length === 0);
   ok("brand + sub", text().includes("Phoenix Calculator") && text().includes("Job — s01294"));
+  const logo = q(".logo-box img");
+  ok("header shows the Made with Love logo (no P mark)", !!logo && logo.alt === "Made with Love" && /^data:image\/png;base64,/.test(logo.getAttribute("src")) && !q(".mark"));
   ok("sections 01..07", ["Job details", "Tier pricing", "Rate book", "Stone schedule", "Quotes", "Quote breakdown", "Remarks"].every(t => text().includes(t)));
   ok("no tabs", !q('[role=tablist]'));
   ok("gross 1,609 and AUD 2,300", text().includes("$1,609.00") && text().includes("AUD $2,300.00"));
@@ -95,7 +97,11 @@ const readBuf = blob => new Promise(res => { const fr = new w.FileReader(); fr.o
   btn("Download").click(); await wait(800);
   const pdf = calls.saves.find(s => s.filename.endsWith(".pdf"));
   ok("Download offers a .pdf named from job + stage", !!pdf && /^s01294_Q1_\d{8}-\d{6}\.pdf$/.test(pdf.filename));
-  if (pdf) { const b = new Uint8Array(await readBuf(pdf.data)); ok("PDF bytes start with %PDF and are non-trivial", String.fromCharCode(...b.slice(0, 4)) === "%PDF" && b.length > 2000); }
+  if (pdf) {
+    const b = new Uint8Array(await readBuf(pdf.data)); ok("PDF bytes start with %PDF and are non-trivial", String.fromCharCode(...b.slice(0, 4)) === "%PDF" && b.length > 2000);
+    let raw = ""; for (let i = 0; i < b.length; i += 0x8000) raw += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000));
+    ok("PDF carries the logo image", raw.includes("/Subtype /Image"));
+  }
   console.log("-- Export to GATI");
   btn("Export to GATI").click(); await wait(800);
   const gx = calls.saves.find(s => s.filename.endsWith("_GATI.xlsx"));

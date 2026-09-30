@@ -69,6 +69,7 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
   const pdfBlob = objectUrls[objectUrls.length - 1];
   const head = new Uint8Array(await readBuf(pdfBlob)).slice(0, 4);
   ok("the saved file is a real PDF", String.fromCharCode(...head) === "%PDF" && pdfBlob.size > 2000);
+  ok("website header shows the Made with Love logo", !!q(".logo-box img") && q(".logo-box img").alt === "Made with Love");
   btn("Export to GATI").click(); await wait(900);
   ok("GATI export downloads an .xlsx", anchors.some(a => a.download.endsWith("_GATI.xlsx")));
 

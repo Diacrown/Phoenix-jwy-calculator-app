@@ -777,7 +777,7 @@
     ui.main = h("main", { class: "shell pane" });
     root.replaceChildren(
       h("div", { class: "topbar" }, h("div", { class: "topbar-in" },
-        h("div", { class: "brand" }, h("div", { class: "logo-box" }, h("div", { class: "mark" }, "P")), h("div", null, h("div", { class: "brand-title" }, "Phoenix Calculator"), ui.sub)),
+        h("div", { class: "brand" }, h("div", { class: "logo-box" }, h("img", { class: "logo-img", src: LOGOS.white, alt: "Made with Love" })), h("div", null, h("div", { class: "brand-title" }, "Phoenix Calculator"), ui.sub)),
         h("div", { class: "top-actions" }, clear,
           h("button", { class: "top-btn", type: "button", onclick: openSaved }, "Load saved quote", h("span", { class: "info", title: "Reload a quote synced to the database, or load a quote file." }, "ⓘ")),
           h("button", { class: "top-btn", type: "button", onclick: () => orderFile.click() }, "Load order data", h("span", { class: "info", title: "Choose the .json exported by the CAD Order Form (Export Order Data). Job details, metals, stones and images are filled in." }, "ⓘ")), orderFile))),

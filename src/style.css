@@ -25,8 +25,8 @@ h1,h2,h3,p{margin:0}
 .topbar{background:var(--bar);border-bottom:3px solid var(--rose)}
 .topbar-in{max-width:1180px;margin:0 auto;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px 20px;flex-wrap:wrap}
 .brand{display:flex;align-items:center;gap:12px;min-width:0}
-.logo-box{width:40px;height:40px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;flex:none}
-.mark{width:28px;height:28px;border-radius:6px;background:var(--rose);color:#fff;display:flex;align-items:center;justify-content:center;font:700 13px var(--serif);letter-spacing:.5px}
+.logo-box{padding:6px 12px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;flex:none}
+.logo-img{height:42px;width:auto;display:block}
 .brand-title{color:#fff;font:600 15px var(--serif);letter-spacing:.2px}
 .brand-sub{color:var(--bar-text);font-size:11.5px;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:46vw}
 .top-actions{display:flex;gap:10px;flex-wrap:wrap}

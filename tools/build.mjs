@@ -15,7 +15,11 @@ const vendor = [
   "node_modules/xlsx/dist/xlsx.mini.min.js"
 ].map(p => rd(p));
 
-const app = ["src/data.js", "src/engine.js", "src/export.js", ...(artifact ? [] : ["src/web-adapter.js"]), "src/app.js"].map(p => rd(p));
+// The logo is inlined as a data URI so the page stays one self-contained file.
+const logo = "data:image/png;base64," + readFileSync(join(root, "assets/logo-white.png")).toString("base64");
+const logos = `const LOGOS = { white: ${JSON.stringify(logo)} };`;
+
+const app = [logos, ...["src/data.js", "src/engine.js", "src/export.js", ...(artifact ? [] : ["src/web-adapter.js"]), "src/app.js"].map(p => rd(p))];
 
 // Inlined scripts must not contain a closing script tag.
 for (const code of [...vendor, ...app]) if (/<\/script/i.test(code)) throw new Error("A source file contains </script>, which would break inlining.");

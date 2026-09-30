@@ -124,8 +124,16 @@ function buildQuotePdf(ctx) {
   const title = anyPrice ? (full ? "Quotation" : "Quotation Order") : "Production Sheet";
   doc.setFillColor(...PDF_PLUM); doc.rect(0, 0, W, 26, "F");
   doc.setFillColor(...PDF_ROSE); doc.rect(0, 26, W, 1.2, "F");
-  doc.setTextColor(255, 255, 255); doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.text("PHOENIX JEWELLERY", M, 10);
-  doc.setFontSize(18); doc.text(title, M, 19);
+  // Made with Love logo on the left of the band, then a thin divider and the document title
+  let tx = M;
+  try {
+    const lp = doc.getImageProperties(LOGOS.white), lh = 15, lw = lh * lp.width / lp.height;
+    doc.addImage(LOGOS.white, "PNG", M, (26 - lh) / 2, lw, lh);
+    tx = M + lw + 6;
+    doc.setDrawColor(...PDF_ROSE); doc.setLineWidth(0.3); doc.line(tx - 3, 6, tx - 3, 20);
+  } catch (e) { /* no logo: the title simply starts at the margin */ }
+  doc.setTextColor(255, 255, 255); doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.text("PHOENIX JEWELLERY", tx, 10);
+  doc.setFontSize(18); doc.text(title, tx, 19);
   doc.setFont("helvetica", "normal"); doc.setFontSize(9);
   doc.text(pdfSafe("Job " + (job.jobNo || "-") + "   Item " + (job.itemNo || "-")), W - M, 10, { align: "right" });
   doc.text(pdfSafe("Quote " + (job.stage || "Q1") + "   " + (job.date || "")), W - M, 16, { align: "right" });
