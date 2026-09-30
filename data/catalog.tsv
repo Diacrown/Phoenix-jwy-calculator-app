@@ -1,0 +1,420 @@
+Code	Shape	Size	Wt/Pc	SizeGroup
+RND0.7M	Round	0.7 mm (0.002 ct ±)	0.002	R00
+RND0.8M	Round	0.8 mm (0.003 ct ±)	0.003	R00
+RND0.9M	Round	0.9 mm (0.004 ct ±)	0.004	R00
+RND1.0M	Round	1.0 mm (0.005 ct ±)	0.005	R00
+RND1.1M	Round	1.1 mm (0.006 ct ±)	0.006	R00
+RND1.2M	Round	1.2 mm (0.008 ct ±)	0.008	R00
+RND1.3M	Round	1.3 mm (0.01 ct ±)	0.01	R02
+RND1.4M	Round	1.4 mm (0.012 ct ±)	0.012	R02
+RND1.5M	Round	1.5 mm (0.015 ct ±)	0.015	R02
+RND1.6M	Round	1.6 mm (0.017 ct ±)	0.017	R02
+RND1.7M	Round	1.7 mm (0.02 ct ±)	0.02	R02
+RND1.8M	Round	1.8 mm (0.023 ct ±)	0.023	R02
+RND1.9M	Round	1.9 mm (0.027 ct ±)	0.028	R02
+RND2.0M	Round	2.0 mm (0.03 ct ±)	0.032	R02
+RND2.1M	Round	2.1 mm (0.04 ct ±)	0.04	R02
+RND2.2M	Round	2.2 mm (0.045 ct ±)	0.045	R02
+RND2.3M	Round	2.3 mm (0.05 ct ±)	0.05	R09
+RND2.4M	Round	2.4 mm (0.055 ct ±)	0.055	R09
+RND2.5M	Round	2.5 mm (0.06 ct ±)	0.063	R09
+RND2.6M	Round	2.6 mm (0.07 ct ±)	0.073	R09
+RND2.7M	Round	2.7 mm (0.08ct ±)	0.08	R11
+RND2.8M	Round	2.8 mm (0.08-0.09 ct ±)	0.087	R11
+RND2.9M	Round	2.9 mm (0.09-0.10 ct ±)	0.097	R12
+RND3.0M	Round	3.0 mm (0.10-0.11 ct ±)	0.107	R12
+RND3.1M	Round	3.1 mm (0.11-0.12 ct ±)	0.117	R12
+RND3.2M	Round	3.2 mm (0.12-0.13 ct ±)	0.127	R12
+RND3.3M	Round	3.3 mm (0.14-0.145 ct ±)	0.143	R12
+RND3.4M	Round	3.4 mm (0.15-0.16 ct ±)	0.155	R14
+RND3.5M	Round	3.5 mm (0.16-0.17 ct ±)	0.165	R14
+RND3.6M	Round	3.6 mm (0.17-0.18 ct ±)	0.175	R18
+RND3.7M	Round	3.7 mm (0.19-0.21 ct ±)	0.2	R20
+RND3.8M	Round	3.8 mm (0.21-0.23 ct ±)	0.22	R20
+RND3.9M	Round	3.9 mm (0.23-0.24 ct ±)	0.235	R23
+RND4.0M	Round	4.0 mm (0.24-0.26 ct ±)	0.255	R25
+RND4.1M	Round	4.1 mm (0.26-0.29 ct ±)	0.275	R25
+RND030W	Round	4.2-4.4 mm ± (0.30-0.34 ct)	0.32	R30
+RND038W	Round	4.4-4.6 mm ± (0.35-0.39 ct)	0.365	R38
+RND040W	Round	4.6-4.8 mm ± (0.40-0.44 ct)	0.415	R40
+RND046W	Round	4.7-4.9 mm ± (0.45-0.49 ct)	0.47	R46
+RND050W	Round	5.0-5.2 mm ± (0.50-0.59 ct)	0.51	R50
+RND060W	Round	5.3-5.5 mm ± (0.60-0.69 ct)	0.61	R60
+RND070W	Round	5.5-5.7 mm ± (0.70-0.73 ct)	0.72	R70
+RND075W	Round	5.7-5.8 mm ± (0.74-0.79 ct)	0.76	R75
+RND080W	Round	5.8-6.0 mm ± (0.80-0.89 ct)	0.81	R80
+BAG1210M	Baguette	 1.25 x 1.00 mm	0.009	
+BAG1507M	Baguette	 1.50 x 0.75 mm	0.008	
+BAG1510M	Baguette	 1.50 x 1.00 mm	0.01	
+BAG1512M	Baguette	 1.50 x 1.25 mm	0.02	
+BAG1707M	Baguette	 1.75 x 0.75 mm	0.02	
+BAG1710M	Baguette	 1.75 x 1.00 mm	0.01	
+BAG1712M	Baguette	 1.75 x 1.25 mm	0.02	
+BAG1715M	Baguette	 1.75 x 1.50 mm	0.03	
+BAG2007M	Baguette	 2.00 x 0.75 mm	0.01	
+BAG2010M	Baguette	 2.00 x 1.00 mm	0.02	
+BAG2012M	Baguette	 2.00 x 1.25 mm	0.02	
+BAG2015M	Baguette	 2.00 x 1.50 mm	0.03	
+BAG2017M	Baguette	 2.00 x 1.75 mm	0.04	
+BAG2207M	Baguette	 2.25 x 0.75 mm	0.01	
+BAG2210M	Baguette	 2.25 x 1.00 mm	0.02	
+BAG2212M	Baguette	 2.25 x 1.25 mm	0.03	
+BAG2215M	Baguette	 2.25 x 1.50 mm	0.04	
+BAG2217M	Baguette	 2.25 x 1.75 mm	0.05	
+BAG2507M	Baguette	 2.50 x 0.75 mm	0.02	
+BAG2510M	Baguette	 2.50 x 1.00 mm	0.02	
+BAG2512M	Baguette	 2.50 x 1.25 mm	0.03	
+BAG2515M	Baguette	 2.50 x 1.50 mm	0.04	
+BAG2517M	Baguette	 2.50 x 1.75 mm	0.06	
+BAG2520M	Baguette	 2.50 x 2.00 mm	0.07	
+BAG2710M	Baguette	 2.75 x 1.00 mm	0.02	
+BAG2712M	Baguette	 2.75 x 1.25 mm	0.04	
+BAG2715M	Baguette	 2.75 x 1.50 mm	0.05	
+BAG2717M	Baguette	 2.75 x 1.75 mm	0.06	
+BAG2720M	Baguette	 2.75 x 2.00 mm	0.08	
+BAG2722M	Baguette	 2.75 x 2.25 mm	0.1	
+BAG3010M	Baguette	 3.00 x 1.00 mm	0.03	
+BAG3012M	Baguette	 3.00 x 1.25 mm	0.04	
+BAG3015M	Baguette	 3.00 x 1.50 mm	0.06	
+BAG3017M	Baguette	 3.00 x 1.75 mm	0.07	
+BAG3020M	Baguette	 3.00 x 2.00 mm	0.09	
+BAG3022M	Baguette	 3.00 x 2.25 mm	0.11	
+BAG3025M	Baguette	 3.00 x 2.50 mm	0.12	
+BAG3210M	Baguette	 3.25 x 1.00 mm	0.03	
+BAG3212M	Baguette	 3.25 x 1.25 mm	0.04	
+BAG3215M	Baguette	 3.25 x 1.50 mm	0.06	
+BAG3217M	Baguette	 3.25 x 1.75 mm	0.08	
+BAG3220M	Baguette	 3.25 x 2.00 mm	0.1	
+BAG3222M	Baguette	 3.25 x 2.25 mm	0.12	
+BAG3225M	Baguette	 3.25 x 2.50 mm	0.14	
+BAG3510M	Baguette	 3.50 x 1.00 mm	0.04	
+BAG3512M	Baguette	 3.50 x 1.25 mm	0.05	
+BAG3515M	Baguette	 3.50 x 1.50 mm	0.07	
+BAG3517M	Baguette	 3.50 x 1.75 mm	0.09	
+BAG3520M	Baguette	 3.50 x 2.00 mm	0.11	
+BAG3522M	Baguette	 3.50 x 2.25 mm	0.12	
+BAG3525M	Baguette	 3.50 x 2.50 mm	0.14	
+BAG3710M	Baguette	 3.75 x 1.00 mm	0.04	
+BAG3712M	Baguette	 3.75 x 1.25 mm	0.05	
+BAG3715M	Baguette	 3.75 x 1.50 mm	0.07	
+BAG3717M	Baguette	 3.75 x 1.75 mm	0.09	
+BAG3720M	Baguette	 3.75 x 2.00 mm	0.12	
+BAG3722M	Baguette	 3.75 x 2.25 mm	0.14	
+BAG3725M	Baguette	 3.75 x 2.50 mm	0.16	
+BAG4012M	Baguette	 4.00 x 1.25 mm	0.05	
+BAG4015M	Baguette	 4.00 x 1.50 mm	0.07	
+BAG4017M	Baguette	 4.00 x 1.75 mm	0.1	
+BAG4020M	Baguette	 4.00 x 2.00 mm	0.13	
+BAG4022M	Baguette	 4.00 x 2.25 mm	0.16	
+BAG4025M	Baguette	 4.00 x 2.50 mm	0.19	
+BAG4027M	Baguette	 4.00 x 2.75 mm	0.2	
+BAG4030M	Baguette	 4.00 x 3.00 mm	0.23	
+BAG4212M	Baguette	 4.25 x 1.25 mm	0.06	
+BAG4215M	Baguette	 4.25 x 1.50 mm	0.08	
+BAG4217M	Baguette	 4.25 x 1.75 mm	0.1	
+BAG4220M	Baguette	 4.25 x 2.00 mm	0.14	
+BAG4222M	Baguette	 4.25 x 2.25 mm	0.15	
+BAG4225M	Baguette	 4.25 x 2.50 mm	0.19	
+BAG4227M	Baguette	 4.25 x 2.75 mm	0.24	
+BAG4512M	Baguette	 4.50 x 1.25 mm	0.06	
+BAG4515M	Baguette	 4.50 x 1.50 mm	0.09	
+BAG4517M	Baguette	 4.50 x 1.75 mm	0.12	
+BAG4520M	Baguette	 4.50 x 2.00 mm	0.15	
+BAG4522M	Baguette	 4.50 x 2.25 mm	0.18	
+BAG4525M	Baguette	 4.50 x 2.50 mm	0.21	
+BAG4527M	Baguette	 4.50 x 2.75 mm	0.25	
+BAG4530M	Baguette	 4.50 x 3.00 mm	0.28	
+BAG4715M	Baguette	 4.75 x 1.50 mm	0.09	
+BAG4720M	Baguette	 4.75 x 2.00 mm	0.15	
+BAG4725M	Baguette	 4.75 x 2.50 mm	0.22	
+BAG5020M	Baguette	 5.00 x 2.00 mm	0.17	
+BAG5025M	Baguette	 5.00 x 2.50 mm	0.24	
+BAG5030M	Baguette	 5.00 x 3.00 mm	0.32	
+BAG5525M	Baguette	 5.50 x 2.50 mm	0.27	
+BAG5530M	Baguette	 5.50 x 3.00 mm	0.36	
+BAG6030M	Baguette	 6.00 x 3.00 mm	0.42	
+CAR1.5M	Carre	 1.5 mm	0.02	
+CAR1.6M	Carre	 1.6 mm	0.025	
+CAR1.7M	Carre	 1.7 mm	0.03	
+CAR1.8M	Carre	 1.8 mm	0.035	
+CAR1.9M	Carre	 1.9 mm	0.04	
+CAR2.0M	Carre	 2.0 mm	0.05	
+CAR2.1M	Carre	 2.1 mm	0.06	
+CAR2.2M	Carre	 2.2 mm	0.07	
+CAR2.3M	Carre	 2.3 mm	0.08	
+CAR2.4M	Carre	 2.4 mm	0.09	
+CAR2.5M	Carre	 2.5 mm	0.1	
+CAR2.6M	Carre	 2.6 mm	0.11	
+CAR2.7M	Carre	 2.7 mm	0.12	
+CAR2.8M	Carre	 2.8 mm	0.13	
+CAR3.0M	Carre	 3.0 mm	0.15	
+CAR3.2M	Carre	 3.2 mm	0.2	
+CAR3.5M	Carre	 3.5 mm	0.25	
+CAR3.8M	Carre	 3.8 mm	0.33	
+CAR4.0M	Carre	 4.0 mm	0.4	
+EME033W	Emerald	 4.50 x 3.30 mm	0.33	
+EME040W	Emerald	 5.00 x 3.50 mm	0.37	
+EME3023M	Emerald	 3.00 x 2.30 mm	0.1	
+EME3223M	Emerald	 3.20 x 2.30 mm	0.1	
+EME3226M	Emerald			
+EME3725M	Emerald	 3.75 x 2.50 mm	0.15	
+EME3727M	Emerald	 3.75 x 2.75 mm	0.19	
+EME4030M	Emerald	 4.00 x 3.00 mm	0.24	
+EME4430M	Emerald	 4.45 x 3.00 mm	0.275	
+HRT033W	Heart	 4.10 x 4.60 mm	0.33	
+HRT037W	Heart	 4.20 x 4.80 mm	0.37	
+HRT2730M	Heart	 2.70 x 3.00 mm	0.1	
+HRT3235M	Heart	 3.20 x 3.50 mm	0.15	
+HRT3638M	Heart	 3.60 x 3.80 mm	0.2	
+HRT3943M	Heart	 3.90 x 4.30 mm	0.25	
+MQS033W	Marquise	 6.00 x 3.50 mm	0.33	
+MQS040W	Marquise			
+MQS2512M	Marquise	 2.50 x 1.25 mm	0.02	
+MQS3015M	Marquise	 3.00 x 1.50 mm	0.04	
+MQS3116M	Marquise	 3.10 x 1.60 mm	0.04	
+MQS3517M	Marquise	 3.50 x 1.75 mm	0.05	
+MQS3520M	Marquise	 3.50 x 2.00 mm	0.05	
+MQS3717M	Marquise	 3.75 x 1.75 mm	0.05	
+MQS4020M	Marquise	 4.00 x 2.00 mm	0.065	
+MQS4222M	Marquise	 4.25 x 2.25 mm	0.07	
+MQS4525M	Marquise	 4.50 x 2.25 mm	0.09	
+MQS5025M	Marquise	 5.00 x 2.50 mm	0.12	
+MQS5030M	Marquise	 5.00 x 3.00 mm	0.2	
+MQS6030M	Marquise	 6.00 x 3.00 mm	0.25	
+OVL030W	Oval	 5.40 x 3.80 mm	0.33	
+OVL040W	Oval			
+OVL3020M	Oval	 3.00 x 2.00 mm	0.055	
+OVL3023M	Oval	 3.00 x 2.30 mm	0.07	
+OVL3525M	Oval	 3.50 x 2.50 mm	0.09	
+OVL3627M	Oval	 3.60 x 2.70 mm	0.1	
+OVL4030M	Oval	 4.00 x 3.00 mm	0.15	
+OVL4535M	Oval	 4.50 x 3.50 mm	0.2	
+OVL4833M	Oval	 4.80 x 3.30 mm	0.21	
+OVL5035M	Oval	 5.00 x 3.50 mm	0.25	
+PRN014W	Princess	 2.9 mm	0.14	
+PRN014W	Princess	 3.0 mm	0.15	
+PRN014W	Princess	 3.1 mm	0.17	
+PRN020W	Princess	 3.2 mm	0.19	
+PRN020W	Princess	 3.3 mm	0.22	
+PRN025W	Princess	 3.4 mm	0.24	
+PRN025W	Princess	 3.5 mm	0.26	
+PRN025W	Princess	 3.6 mm	0.28	
+PRN030W	Princess	 3.7 mm	0.33	
+PRN040W	Princess	 4.0 mm	0.4	
+PRN046W	Princess	 4.1 mm	0.46	
+PRN050W	Princess	 4.3 mm	0.5	
+PRN060W	Princess	 4.5 mm	0.6	
+PRN1.4M	Princess	 1.4 mm	0.015	
+PRN1.5M	Princess	 1.5 mm	0.02	
+PRN1.6M	Princess	 1.6 mm	0.025	
+PRN1.7M	Princess	 1.7 mm	0.03	
+PRN1.8M	Princess	 1.8 mm	0.035	
+PRN1.9M	Princess	 1.9 mm	0.04	
+PRN2.0M	Princess	 2.0 mm	0.05	
+PRN2.1M	Princess	 2.1 mm	0.06	
+PRN2.2M	Princess	 2.2 mm	0.07	
+PRN2.3M	Princess	 2.3 mm	0.08	
+PRN2.4M	Princess	 2.4 mm	0.09	
+PRN2.5M	Princess	 2.5 mm	0.1	
+PRN2.6M	Princess	 2.6 mm	0.11	
+PRN2.7M	Princess	 2.7 mm	0.12	
+PRN2.8M	Princess	 2.8 mm	0.13	
+PSH030W	Pear	 5.70 x 3.70 mm	0.33	
+PSH040W	Pear	 6.00 x 4.00 mm	0.33	
+PSH2517M	Pear	 2.50 x 1.7 mm	0.03	
+PSH3020M	Pear	 3.00 x 2.00 mm	0.05	
+PSH3522M	Pear	 3.50 x 2.20 mm	0.07	
+PSH4025M	Pear	 4.00 x 2.50 mm	0.1	
+PSH4030M	Pear	 4.00 x 3.00 mm	0.14	
+PSH4127M	Pear	 4.10 x 2.70 mm	0.11	
+PSH4530M	Pear	 4.50 x 3.00 mm	0.15	
+PSH5030M	Pear	 5.00 x 3.00 mm	0.2	
+PSH5535M	Pear	 5.50 x 3.50 mm	0.25	
+RAD2320M	Radiant	 2.30 x 2.00 mm	0.05	
+RAD2723M	Radiant	 2.70 x 2.30 mm	0.1	
+RAD3024M	Radiant	 3.00 x 2.40 mm	0.1	
+RAD3528M	Radiant	 3.50 x 2.80 mm	0.15	
+RAD3830M	Radiant	 3.80 x 3.00 mm	0.2	
+RAD4035M	Radiant	 4.00 x 3.50 mm	0.25	
+RSP0.9M	Single Cut			
+RSP020W	Single Cut			
+RSP025W	Single Cut			
+RSP030W	Single Cut			
+RSP038W	Single Cut			
+RSP040W	Single Cut			
+RSP046W	Single Cut			
+RSP050W	Single Cut			
+RSP060W	Single Cut			
+RSP1.0M	Single Cut			
+RSP1.1M	Single Cut			
+RSP1.2M	Single Cut			
+RSP1.3M	Single Cut			
+RSP1.4M	Single Cut			
+RSP1.5M	Single Cut			
+RSP1.6M	Single Cut			
+RSP1.7M	Single Cut			
+RSP1.8M	Single Cut			
+RSP1.9M	Single Cut			
+RSP2.0M	Single Cut			
+RSP2.1M	Single Cut			
+RSP2.2M	Single Cut			
+RSP2.3M	Single Cut			
+RSP2.4M	Single Cut			
+RSP2.5M	Single Cut			
+RSP2.6M	Single Cut			
+RSP2.7M	Single Cut			
+RSP2.8M	Single Cut			
+RSP2.9M	Single Cut			
+RSP3.0M	Single Cut			
+RSP3.1M	Single Cut			
+RSP3.2M	Single Cut			
+RSP3.3M	Single Cut			
+RSP3.4M	Single Cut			
+RSP3.5M	Single Cut			
+SCU30M	Sq. Cushion	 3.00 x 3.00 mm	0.15	
+SCU33M	Sq. Cushion	 3.30 x 3.30 mm	0.2	
+SCU36M	Sq. Cushion	 3.60 x 3.60 mm	0.25	
+SCU38M	Sq. Cushion	 3.80 x 3.80 mm	0.33	
+SCU42M	Sq. Cushion	 4.25 x 4.25 mm	0.37	
+SEM033W	Sq. Emerald	 4.00 x 4.00 mm	0.4	
+SEM15M	Sq. Emerald	 1.50 x 1.50 mm	0.02	
+SEM16M	Sq. Emerald	 1.60 x 1.60 mm	0.025	
+SEM17M	Sq. Emerald	 1.70 x 1.70 mm	0.03	
+SEM18M	Sq. Emerald	 1.80 x 1.80 mm	0.035	
+SEM19M	Sq. Emerald	 1.90 x 1.90 mm	0.04	
+SEM20M	Sq. Emerald	 2.00 x 2.00 mm	0.05	
+SEM21M	Sq. Emerald	 2.10 x 2.10 mm	0.06	
+SEM22M	Sq. Emerald	 2.20 x 2.20 mm	0.07	
+SEM23M	Sq. Emerald	 2.30 x 2.30 mm	0.08	
+SEM24M	Sq. Emerald	 2.40 x 2.40 mm	0.08	
+SEM25M	Sq. Emerald	 2.50 x 2.50 mm	0.095	
+SEM26M	Sq. Emerald	 2.60 x 2.60 mm	0.1	
+SEM27M	Sq. Emerald	 2.70 x 2.70 mm	0.11	
+SEM28M	Sq. Emerald	 2.80 x 2.80 mm	0.12	
+SEM29M	Sq. Emerald	 2.90 x 2.90 mm	0.135	
+SEM30M	Sq. Emerald	 3.00 x 3.00 mm	0.15	
+SEM31M	Sq. Emerald	 3.10 x 3.10 mm	0.17	
+SEM32M	Sq. Emerald	 3.20 x 3.20 mm	0.19	
+SEM33M	Sq. Emerald	 3.30 x 3.30 mm	0.2	
+SEM34M	Sq. Emerald	 3.40 x 3.40 mm	0.24	
+SEM35M	Sq. Emerald	 3.50 x 3.50 mm	0.26	
+SEM36M	Sq. Emerald	 3.60 x 3.60 mm	0.33	
+TAP151007	Tappered Bagguette	 1.50 x 1.00 x 0.75 mm	0.01	
+TAP151210	Tappered Bagguette	 1.50 x 1.25 x 1.00 mm	0.01	
+TAP170705	Tappered Bagguette	 1.75 x 0.75 x 0.50 mm	0.008	
+TAP171005	Tappered Bagguette	 1.75 x 1.00 x 0.50 mm	0.01	
+TAP171007	Tappered Bagguette	 1.75 x 1.00 x 0.75 mm	0.01	
+TAP171210	Tappered Bagguette	 1.75 x 1.25 x 1.00 mm	0.02	
+TAP171510	Tappered Bagguette	 1.75 x 1.50 x 1.00 mm	0.02	
+TAP171512	Tappered Bagguette	 1.75 x 1.50 x 1.25 mm	0.02	
+TAP201005	Tappered Bagguette	 2.00 x 1.00 x 0.50 mm	0.01	
+TAP201007	Tappered Bagguette	 2.00 x 1.00 x 0.75 mm	0.01	
+TAP201210	Tappered Bagguette	 2.00 x 1.25 x 1.00 mm	0.02	
+TAP201510	Tappered Bagguette	 2.00 x 1.50 x 1.00 mm	0.02	
+TAP201512	Tappered Bagguette	 2.00 x 1.50 x 1.25 mm	0.03	
+TAP221005	Tappered Bagguette	 2.25 x 1.00 x 0.50 mm	0.01	
+TAP221207	Tappered Bagguette	 2.25 x 1.25 x 0.75 mm	0.02	
+TAP221210	Tappered Bagguette	 2.25 x 1.25 x 1.00 mm	0.02	
+TAP221510	Tappered Bagguette	 2.25 x 1.50 x 1.00 mm	0.03	
+TAP221512	Tappered Bagguette	 2.25 x 1.50 x 1.25 mm	0.04	
+TAP221712	Tappered Bagguette	 2.25 x 1.75 x 1.25 mm	0.04	
+TAP221715	Tappered Bagguette	 2.25 x 1.75 x 1.50 mm	0.05	
+TAP222015	Tappered Bagguette	 2.25 x 2.00 x 1.50 mm	0.05	
+TAP251005	Tappered Bagguette	 2.50 x 1.00 x 0.50 mm	0.02	
+TAP251007	Tappered Bagguette	 2.50 x 1.00 x 0.75 mm	0.02	
+TAP251210	Tappered Bagguette	 2.50 x 1.25 x 1.00 mm	0.03	
+TAP251510	Tappered Bagguette	 2.50 x 1.50 x 1.00 mm	0.03	
+TAP251512	Tappered Bagguette	 2.50 x 1.50 x 1.25 mm	0.04	
+TAP251710	Tappered Bagguette	 2.50 x 1.75 x 1.00 mm	0.04	
+TAP251712	Tappered Bagguette	 2.50 x 1.75 x 1.25 mm	0.05	
+TAP252015	Tappered Bagguette	 2.50 x 2.00 x 1.50 mm	0.05	
+TAP271005	Tappered Bagguette	 2.75 x 1.00 x 0.50 mm	0.02	
+TAP271207	Tappered Bagguette	 2.75 x 1.25 x 0.75 mm	0.03	
+TAP271210	Tappered Bagguette	 2.75 x 1.25 x 1.00 mm	0.03	
+TAP271510	Tappered Bagguette	 2.75 x 1.50 x 1.00 mm	0.04	
+TAP271512	Tappered Bagguette	 2.75 x 1.50 x 1.25 mm	0.04	
+TAP271712	Tappered Bagguette	 2.75 x 1.75 x 1.25 mm	0.05	
+TAP271715	Tappered Bagguette	 2.75 x 1.75 x 1.50 mm	0.05	
+TAP272015	Tappered Bagguette	 2.75 x 2.00 x 1.50 mm	0.07	
+TAP301207	Tappered Bagguette	 3.00 x 1.25 x 0.75 mm	0.03	
+TAP301210	Tappered Bagguette	 3.00 x 1.25 x 1.00 mm	0.04	
+TAP301510	Tappered Bagguette	 3.00 x 1.50 x 1.00 mm	0.04	
+TAP301512	Tappered Bagguette	 3.00 x 1.50 x 1.25 mm	0.05	
+TAP301710	Tappered Bagguette	 3.00 x 1.75 x 1.00 mm	0.06	
+TAP301712	Tappered Bagguette	 3.00 x 1.75 x 1.25 mm	0.06	
+TAP302010	Tappered Bagguette	 3.00 x 2.00 x 1.00 mm	0.06	
+TAP302015	Tappered Bagguette	 3.00 x 2.00 x 1.50 mm	0.07	
+TAP302017	Tappered Bagguette	 3.00 x 2.00 x 1.75 mm	0.08	
+TAP302517	Tappered Bagguette	 3.00 x 2.50 x 1.75 mm	0.09	
+TAP321005	Tappered Bagguette	 3.25 x 1.00 x 0.50 mm	0.02	
+TAP321207	Tappered Bagguette	 3.25 x 1.25 x 0.75 mm	0.03	
+TAP321210	Tappered Bagguette	 3.25 x 1.25 x 1.00 mm	0.03	
+TAP321507	Tappered Bagguette	 3.25 x 1.50 x 0.75 mm	0.04	
+TAP321510	Tappered Bagguette	 3.25 x 1.50 x 1.00 mm	0.05	
+TAP321512	Tappered Bagguette	 3.25 x 1.50 x 1.25 mm	0.05	
+TAP321710	Tappered Bagguette	 3.25 x 1.75 x 1.00 mm	0.06	
+TAP321712	Tappered Bagguette	 3.25 x 1.75 x 1.25 mm	0.06	
+TAP321715	Tappered Bagguette	 3.25 x 1.75 x 1.50 mm	0.06	
+TAP322010	Tappered Bagguette	 3.25 x 2.00 x 1.00 mm	0.07	
+TAP322012	Tappered Bagguette	 3.25 x 2.00 x 1.25 mm	0.07	
+TAP322015	Tappered Bagguette	 3.25 x 2.00 x 1.50 mm	0.07	
+TAP322517	Tappered Bagguette	 3.25 x 2.50 x 1.75 mm	0.1	
+TAP351210	Tappered Bagguette	 3.50 x 1.25 x 1.00 mm	0.04	
+TAP351510	Tappered Bagguette	 3.50 x 1.50 x 1.00 mm	0.05	
+TAP351512	Tappered Bagguette	 3.50 x 1.50 x 1.25 mm	0.05	
+TAP351710	Tappered Bagguette	 3.50 x 1.75 x 1.00 mm	0.06	
+TAP351712	Tappered Bagguette	 3.50 x 1.75 x 1.25 mm	0.07	
+TAP352010	Tappered Bagguette	 3.50 x 2.00 x 1.00 mm	0.08	
+TAP352012	Tappered Bagguette	 3.50 x 2.00 x 1.25 mm	0.08	
+TAP352015	Tappered Bagguette	 3.50 x 2.00 x 1.50 mm	0.08	
+TAP352515	Tappered Bagguette	 3.50 x 2.50 x 1.50 mm	0.1	
+TAP371210	Tappered Bagguette	 3.75 x 1.25 x 1.00 mm	0.05	
+TAP371510	Tappered Bagguette	 3.75 x 1.50 x 1.00 mm	0.06	
+TAP371712	Tappered Bagguette	 3.75 x 1.75 x 1.25 mm	0.07	
+TAP372012	Tappered Bagguette	 3.75 x 2.00 x 1.25 mm	0.09	
+TAP372015	Tappered Bagguette	 3.75 x 2.00 x 1.50 mm	0.1	
+TAP372217	Tappered Bagguette	 3.75 x 2.25 x 1.75 mm	0.11	
+TAP401210	Tappered Bagguette	 4.00 x 1.25 x 1.00 mm	0.04	
+TAP401510	Tappered Bagguette	 4.00 x 1.50 x 1.00 mm	0.06	
+TAP401712	Tappered Bagguette	 4.00 x 1.75 x 1.25 mm	0.08	
+TAP402010	Tappered Bagguette	 4.00 x 2.00 x 1.00 mm	0.08	
+TAP402015	Tappered Bagguette	 4.00 x 2.00 x 1.50 mm	0.1	
+TAP402515	Tappered Bagguette	 4.00 x 2.50 x 1.50 mm	0.13	
+TAP402517	Tappered Bagguette	 4.00 x 2.50 x 1.75 mm	0.13	
+TAP422015	Tappered Bagguette	 4.25 x 2.00 x 1.50 mm	0.11	
+TAP422215	Tappered Bagguette	 4.25 x 2.25 x 1.50 mm	0.13	
+TAP422515	Tappered Bagguette	 4.25 x 2.50 x 1.50 mm	0.14	
+TAP422717	Tappered Bagguette	 4.25 x 2.75 x 1.75 mm	0.18	
+TAP451512	Tappered Bagguette	 4.50 x 1.50 x 1.25 mm	0.08	
+TAP452010	Tappered Bagguette	 4.50 x 2.00 x 1.00 mm	0.09	
+TAP452015	Tappered Bagguette	 4.50 x 2.00 x 1.50 mm	0.11	
+TAP452215	Tappered Bagguette	 4.50 x 2.25 x 1.50 mm	0.13	
+TAP452515	Tappered Bagguette	 4.50 x 2.50 x 1.50 mm	0.16	
+TAP452517	Tappered Bagguette	 4.50 x 2.50 x 1.75 mm	0.15	
+TAP452717	Tappered Bagguette	 4.50 x 2.75 x 1.75 mm	0.19	
+TAP471715	Tappered Bagguette	 4.75 x 1.75 x 1.50 mm	0.11	
+TAP472015	Tappered Bagguette	 4.75 x 2.00 x 1.50 mm	0.13	
+TAP472515	Tappered Bagguette	 4.75 x 2.50 x 1.50 mm	0.17	
+TAP472520	Tappered Bagguette	 4.75 x 2.50 x 2.00 mm	0.18	
+TAP473020	Tappered Bagguette	 4.75 x 3.00 x 2.00 mm	0.22	
+TAP502212	Tappered Bagguette	 5.00 x 2.25 x 1.25 mm	0.13	
+TAP502217	Tappered Bagguette	 5.00 x 2.25 x 1.75 mm	0.16	
+TAP502720	Tappered Bagguette	 5.00 x 2.75 x 2.00 mm	0.23	
+TAP552510	Tappered Bagguette	 5.50 x 2.50 x 1.00 mm	0.17	
+TAP552522	Tappered Bagguette	 5.50 x 2.50 x 2.25 mm	0.23	
+TAP553022	Tappered Bagguette	 5.50 x 3.00 x 2.25 mm	0.3	
+TAP602015	Tappered Bagguette	 6.00 x 2.00 x 1.50 mm	0.18	
+TAP603022	Tappered Bagguette	 6.00 x 3.00 x 2.25 mm	0.28	
+TRG030W	Triangle	5.00 x 5.00 x 5.00 mm	0.3	
+TRG040W	Triangle	5.50 x 5.50 x 5.50 mm	0.37	
+TRG25M	Triangle	2.50 x 2.50 x 2.50 mm	0.04	
+TRG30M	Triangle	3.00 x 3.00 x 3.00 mm	0.09	
+TRG35M	Triangle	3.50 x 3.50 x 3.50 mm	0.12	
+TRG40M	Triangle	4.00 x 4.00 x 4.00 mm	0.15	
+TRG45M	Triangle	4.50 x 4.50 x 4.50 mm	0.22	
+TRN011W	Trilliant	 3.3~3.6 mm	0.1	
+TRN014W	Trilliant	 3.7~3.9 mm	0.15	
+TRN020W	Trilliant	 4.0~4.2 mm	0.2	
+TRN025W	Trilliant	 4.30~4.4 mm	0.25	
+TRN030W	Trilliant	 4.5~5.0 mm	0.33	
+TRN040W	Trilliant	 5.5~5.8 mm	0.4	

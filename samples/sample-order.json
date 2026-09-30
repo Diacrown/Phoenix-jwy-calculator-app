@@ -1,0 +1,17 @@
+{
+  "JobNo": "4376",
+  "ItemNo": "B00630",
+  "ItemType": "Ring",
+  "Sub Category": "Solitaire",
+  "Item Size": "UK O",
+  "CAD Designer": "Sudip",
+  "Client Notes": "Sample order for testing Load order data.",
+  "Metal Type 1": "18KT",
+  "Metal Col 1": "WG",
+  "Metal 1 Weight": "5.53",
+  "_RAW_STONES": [
+    { "Shape": "Round", "Stone": "Mined", "AvgWt": "0.005", "Qty": "10" },
+    { "Shape": "Round", "Stone": "Mined", "AvgWt": "0.024", "Qty": "6" },
+    { "Shape": "Kite", "Stone": "Moissanite", "AvgWt": "0.1", "Qty": "2" }
+  ]
+}

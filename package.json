@@ -1,0 +1,29 @@
+{
+  "name": "phoenix-calculator-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Phoenix tier-pricing quote calculator (WSSY / AUD) with PDF, GATI export, Drive, database and email.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "build": "node tools/build.mjs",
+    "build:artifact": "node tools/build.mjs --artifact",
+    "data": "python3 tools/gen_data.py",
+    "dev": "netlify dev",
+    "test": "node tools/build.mjs && node tools/build.mjs --artifact && node tests/engine.test.cjs && node tests/smoke.test.cjs && node tests/web-adapter.test.cjs && node tests/functions.test.mjs"
+  },
+  "dependencies": {
+    "@netlify/blobs": "^10.7.9",
+    "@netlify/database": "^2.0.1",
+    "jspdf": "2.5.1",
+    "jspdf-autotable": "3.8.2",
+    "resend": "^6.17.2",
+    "xlsx": "0.18.5"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.3.0",
+    "jsdom": "^30.1.1"
+  }
+}
