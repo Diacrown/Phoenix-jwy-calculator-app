@@ -117,6 +117,16 @@ const quote = (o = {}) => Object.assign({ filenameBase: "4376_B00630_Q1_20260930
   mailResult = { data: null, error: { message: "domain not verified" } };
   ok("Resend error is passed back", (await j(await api.email(req("send-quote-email", { method: "POST", body: { to: "client@example.com", filenameBase: "x", pdfBase64: pdf } })))).body.error === "domain not verified");
 
+  // Database selection: Netlify Database, or Neon (what the JWY calculator uses)
+  const { chooseSql } = await import("../netlify/lib/sql.mjs");
+  const loaders = { netlifyDatabase: () => "netlify-db", neon: () => "neon" };
+  ok("NETLIFY_DB_URL -> Netlify Database", chooseSql({ NETLIFY_DB_URL: "x" }, loaders) === "netlify-db");
+  ok("only NETLIFY_DATABASE_URL -> Neon (same as JWY)", chooseSql({ NETLIFY_DATABASE_URL: "x" }, loaders) === "neon");
+  ok("both set -> Netlify Database wins", chooseSql({ NETLIFY_DB_URL: "x", NETLIFY_DATABASE_URL: "y" }, loaders) === "netlify-db");
+  ok("neither set -> Netlify Database's own clear error", chooseSql({}, loaders) === "netlify-db");
+  const rt = await import("../netlify/lib/runtime.mjs");
+  ok("runtime wiring loads with both database packages", typeof rt.api.save === "function" && typeof rt.api.config === "function");
+
   console.log(fails ? "\n" + fails + " FAILED" : "\nall server checks passed");
   process.exit(fails ? 1 : 0);
 })().catch(e => { console.error(e); process.exit(1); });

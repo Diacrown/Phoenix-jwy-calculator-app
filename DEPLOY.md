@@ -85,6 +85,20 @@ Limit: one email carries a PDF up to about 4 MB. If a quote with many CAD images
 
 The first Save to Drive of a session opens a Google sign-in popup; after that it is one click. The app can only touch files it creates itself (the narrow `drive.file` scope), never the rest of anyone's Drive.
 
+### Shortcut: reuse the JWY calculator's settings
+
+If the JWY calculator already saves to Drive and sends email, Phoenix can use the same accounts. In the **jwy-calculator** site's environment variables copy these into the Phoenix site:
+
+| JWY site has | Phoenix site needs | Notes |
+| --- | --- | --- |
+| `VITE_GOOGLE_CLIENT_ID` | `GOOGLE_CLIENT_ID` | Same value. Then in Google Cloud → Credentials → that OAuth client → **Authorized JavaScript origins**, add the Phoenix site URL. Without this Google refuses the sign-in popup. |
+| `VITE_DRIVE_FOLDER_ID` | `GOOGLE_DRIVE_FOLDER_ID` | Same value puts Phoenix PDFs in the same folder. The narrow `drive.file` scope only works with a folder made through the same OAuth client, so a folder created by hand will not accept uploads. |
+| `RESEND_API_KEY` | `RESEND_API_KEY` | Same value, mark it secret. |
+| `RESEND_FROM_ADDRESS` (if set) | `RESEND_FROM_ADDRESS` | Same value. |
+| not applicable | `APP_ACCESS_KEY` | New value, see step 3. JWY has no equivalent. |
+
+**Database.** Phoenix uses whichever Postgres the site has: Netlify Database (`NETLIFY_DB_URL`), or Neon added through the Netlify DB extension (`NETLIFY_DATABASE_URL`, what JWY uses). The table `phoenix_quotes` is created on first save. In Netlify: **Extensions → Neon → add to this site** if the site has neither.
+
 ## 6. Check it end to end
 
 Open the site and go through this once:
