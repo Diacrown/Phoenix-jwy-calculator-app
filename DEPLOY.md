@@ -93,7 +93,7 @@ If the JWY calculator already saves to Drive and sends email, Phoenix can use th
 | --- | --- | --- |
 | `VITE_GOOGLE_CLIENT_ID` | `GOOGLE_CLIENT_ID` | Same value. Then in Google Cloud → Credentials → that OAuth client → **Authorized JavaScript origins**, add the Phoenix site URL. Without this Google refuses the sign-in popup. |
 | `VITE_DRIVE_FOLDER_ID` | `GOOGLE_DRIVE_FOLDER_ID` | Same value puts Phoenix PDFs in the same folder. The narrow `drive.file` scope only works with a folder made through the same OAuth client, so a folder created by hand will not accept uploads. |
-| `RESEND_API_KEY` | `RESEND_API_KEY` | Same value, mark it secret. |
+| `RESEND_API_KEY` | `RESEND_API_KEY` | Can't be copied: Netlify never shows a secret value again. Create a new key in Resend (**API Keys → Create API Key → Sending access**, it starts with `re_`) and mark it secret. |
 | `RESEND_FROM_ADDRESS` (if set) | `RESEND_FROM_ADDRESS` | Same value. |
 | not applicable | `APP_ACCESS_KEY` | New value, see step 3. JWY has no equivalent. |
 
