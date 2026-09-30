@@ -31,6 +31,7 @@ Browser (dist/index.html)
 
 | Path | What it is |
 | --- | --- |
+| `phoenix-calculator.html` | The finished calculator as one file (the website build). Open it in a browser; rewritten by every `npm run build` |
 | `src/app.js` | The interface: sections 01–07, stone table, quotes toolbar |
 | `src/engine.js` | Pricing maths and CAD-order parsing (pure functions) |
 | `src/export.js` | PDF layout and GATI workbook |

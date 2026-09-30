@@ -12,7 +12,7 @@
     "build:artifact": "node tools/build.mjs --artifact",
     "data": "python3 tools/gen_data.py",
     "dev": "netlify dev",
-    "test": "node tools/build.mjs && node tools/build.mjs --artifact && node tests/engine.test.cjs && node tests/smoke.test.cjs && node tests/web-adapter.test.cjs && node tests/functions.test.mjs"
+    "test": "node tools/build.mjs && node tools/build.mjs --artifact && node tests/engine.test.cjs && node tests/smoke.test.cjs && node tests/web-adapter.test.cjs && node tests/functions.test.mjs && node tests/index-fresh.test.cjs"
   },
   "dependencies": {
     "@netlify/blobs": "^10.7.9",

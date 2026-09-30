@@ -1,7 +1,8 @@
 // Builds the calculator into ONE self-contained HTML file (all CSS, JS and libraries inlined).
 //   node tools/build.mjs             -> dist/index.html                 (deployed website; includes the web adapter)
+//                                       and a copy at ./index.html       (so the repo itself contains the ready-to-open page)
 //   node tools/build.mjs --artifact  -> build/phoenix-artifact.html     (for a Claude artifact; claude.ai supplies the adapter)
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, copyFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -58,3 +59,10 @@ const out = artifact ? join(root, "build", "phoenix-artifact.html") : join(root,
 mkdirSync(dirname(out), { recursive: true });
 writeFileSync(out, html);
 console.log(out.replace(root + "/", ""), (html.length / 1024).toFixed(0) + " KB");
+// A ready-to-open copy of the website build sits in the repo root, so the finished page is visible on GitHub
+// (Netlify still builds its own from src/). It is rewritten by every `npm run build`; commit it with your changes.
+if (!artifact) {
+  writeFileSync(join(root, "phoenix-calculator.html"), html);
+  console.log("phoenix-calculator.html", (html.length / 1024).toFixed(0) + " KB");
+}
+if (!artifact) { copyFileSync(out, join(root, "index.html")); console.log("index.html (copy at the repo root)"); }
