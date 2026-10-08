@@ -51,6 +51,12 @@ const readBuf = blob => new Promise(res => { const fr = new w.FileReader(); fr.o
   ok("breakdown tiles are Metal, Casting, Diamonds only", [...d.querySelectorAll(".metric-label")].map(e => e.textContent).join("|") === "Metal|Casting · Tier 1|Diamonds");
   ok("three total tiles: gross USD, AUD, USD", d.querySelectorAll(".totals-grid .tot").length === 3);
   const curSel = d.querySelector('select[aria-label="PDF currency"]');
+  const tiles = () => [...d.querySelectorAll(".totals-grid .tot")].map(t => !t.hidden);
+  const setCur = v => { curSel.value = v; curSel.dispatchEvent(new d.defaultView.Event("input", { bubbles: true })); };
+  ok("default USD only: gross + USD tiles shown, AUD tile hidden", tiles().join() === "true,true,false");
+  setCur("local"); ok("AUD only: only the AUD tile shows", tiles().join() === "false,false,true");
+  setCur("both"); ok("Normal: all three tiles show", tiles().join() === "true,true,true");
+  setCur("usd");
   ok("PDF currency selector offers Normal, AUD only, USD only, default USD only", !!curSel && [...curSel.options].map(o => o.value).join() === "both,local,usd" && curSel.value === "usd");
   console.log("-- tiers");
   q('.tier[data-tier="Tier 3"]').click();

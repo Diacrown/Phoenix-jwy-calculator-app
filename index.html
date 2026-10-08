@@ -2244,11 +2244,10 @@ function buildQuotePdf(ctx) {
     bk.code = h("span", { class: "ssp-code" });
     return h("div", { class: "card" }, sectionLabel("06", "Quote breakdown"), bk.grid, h("div", { class: "divider" }),
       h("div", { class: "adj" }, bk.ovLab, bk.ov, bk.ovULab, bk.ovU, bk.ovClear, h("div", { class: "divider-v" }), h("span", { class: "lab2" }, "Additional charges"), bk.exName, bk.exAmt, bk.exClear),
-      h("div", { class: "totals-grid two" },
-        h("div", { class: "tot" }, h("div", { class: "l" }, "Gross total · USD"), bk.g),
-        h("div", { class: "tot main" }, bk.ll, bk.l, bk.fx)),
-      h("div", { class: "totals-grid two" },
-        h("div", { class: "tot main" }, bk.ul, bk.u)),
+      h("div", { class: "totals-grid" },
+        bk.tG = h("div", { class: "tot" }, h("div", { class: "l" }, "Gross total · USD"), bk.g),
+        bk.tU = h("div", { class: "tot main" }, bk.ul, bk.u),
+        bk.tL = h("div", { class: "tot main" }, bk.ll, bk.l, bk.fx)),
       h("div", { class: "ssp-row" }, h("span", null, "SSP code"), bk.code, h("span", null, "The gross total written with your price code letters.")));
   }
   function paintBreakdown(q) {
@@ -2258,7 +2257,12 @@ function buildQuotePdf(ctx) {
     bk.ovLab.textContent = "Override final price (" + q.cur + ")";
     bk.ov.placeholder = "calculated: " + (q.local == null ? "no rate" : fmt(q.local, 0));
     bk.ovU.placeholder = "calculated: " + fmt(q.usd, 0);
-    bk.ovULab.hidden = bk.ovU.hidden = q.cur === "USD";
+    // The currency choice (Normal / AUD only / USD only) decides which totals and override boxes are on screen
+    const cm = curMode(j, q);
+    bk.tG.hidden = bk.tU.hidden = cm === "local";
+    bk.tL.hidden = cm === "usd";
+    bk.ovLab.hidden = bk.ov.hidden = cm === "usd";
+    bk.ovULab.hidden = bk.ovU.hidden = cm === "local";
     bk.ul.textContent = "Total · USD" + (q.hasOverride || q.hasOverrideUsd ? "  (calculated: " + money(q.usd) + ")" : "");
     bk.u.textContent = usdText(q);
     bk.ovClear.hidden = !(q.hasOverride || q.hasOverrideUsd); bk.exClear.hidden = !(q.extra > 0 || j.extraName);
