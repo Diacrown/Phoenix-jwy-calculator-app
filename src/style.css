@@ -274,3 +274,74 @@ details.sec>summary{cursor:pointer;color:var(--muted);font-size:11px;letter-spac
 .tbl.stones td.ell{max-width:84px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tbl.stones th,.tbl.stones .td{padding-left:4px;padding-right:4px}
 .w96{width:96px}
+
+/* ---- phone layout (<= 640px): bigger touch targets, no iOS zoom on focus, stone rows as cards ---- */
+html{-webkit-text-size-adjust:100%}
+button,select,input,textarea{touch-action:manipulation}
+@media (max-width:640px){
+  .card{padding:14px}
+  .shell{padding:10px 12px 28px}
+  .topbar-in{padding:10px 12px}
+  .topbar-in .top-btn{flex:1 1 auto;justify-content:center}
+  /* 16px text stops iOS from zooming the page when a field is focused; 44px is a comfortable thumb target */
+  .inp,.inp-sm,select.inp,select.inp-sm,textarea,.mini input,.mini select{font-size:16px;min-height:44px;height:auto}
+  .small-btn,.toggle-btn,.btn,.top-btn{min-height:44px;font-size:14px;padding-left:14px;padding-right:14px}
+  .small-btn.plain{min-width:44px}
+  .divider-v{display:none}
+  .status-ok:empty,.status-warn:empty{display:none}
+
+  /* Quotes toolbar: two buttons per row */
+  .toolbar>.inp-sm,.toolbar>select,.toolbar>.toggle-btn,.toolbar>.small-btn,.toolbar>button{flex:1 1 calc(50% - 6px);width:auto!important}
+  .toolbar>:first-child{flex:1 1 100%}
+  .toolbar>.email-box{flex:1 1 100%}
+  .email-box:not([hidden]){display:flex}
+  .email-box .inp-sm{flex:1 1 100%;width:100%!important}
+  .email-box .small-btn{flex:1 1 auto}
+  .adj{align-items:stretch}
+  .adj .inp-sm,.adj>input{width:100%!important;flex:1 1 100%}
+  .adj .lab2{flex:1 1 100%}
+
+  /* Rate book and other wide tables scroll sideways instead of squashing */
+  .table-scroll{-webkit-overflow-scrolling:touch}
+  .table-scroll .tbl:not(.stones) td{white-space:nowrap}
+
+  /* Stone schedule: one card per stone instead of a 13-column table */
+  .table-scroll:has(.tbl.stones){overflow:visible}
+  .tbl.stones,.tbl.stones tbody,.tbl.stones tfoot{display:block;width:100%}
+  .tbl.stones thead{display:none}
+  .tbl.stones tbody tr{display:grid;grid-template-columns:1fr 1fr;gap:10px 10px;padding:14px 0;border-bottom:1px solid var(--tint-strong)}
+  .tbl.stones td{display:block;border:0;padding:0;min-width:0;white-space:normal;text-align:left}
+  .tbl.stones td.n,.tbl.stones td>*:not(input):not(select){text-align:left}
+  .tbl.stones tbody td:nth-child(13){text-align:right}
+  .tbl.stones td:empty{display:none}
+  .tbl.stones tbody td::before{display:block;font-size:10.5px;font-weight:600;letter-spacing:.3px;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+  .tbl.stones tbody td:nth-child(1){grid-column:1/-1}
+  .tbl.stones tbody td:nth-child(2)::before{content:"Type"}
+  .tbl.stones tbody td:nth-child(3)::before{content:"Shape"}
+  .tbl.stones tbody td:nth-child(4){grid-column:1/-1}
+  .tbl.stones tbody td:nth-child(4)::before{content:"Size"}
+  .tbl.stones tbody td:nth-child(5){grid-column:1/-1;max-width:none}
+  .tbl.stones tbody td:nth-child(5)::before{content:"Spec"}
+  .tbl.stones tbody td:nth-child(6)::before{content:"Quality"}
+  .tbl.stones tbody td:nth-child(7)::before{content:"Proposed quality"}
+  .tbl.stones tbody td:nth-child(8)::before{content:"Wt / pc"}
+  .tbl.stones tbody td:nth-child(9)::before{content:"Pcs"}
+  .tbl.stones tbody td:nth-child(10)::before{content:"Total wt"}
+  .tbl.stones tbody td:nth-child(11)::before{content:"$ / ct"}
+  .tbl.stones tbody td:nth-child(12)::before{content:"$ total"}
+  .tbl.stones tbody td:nth-child(13){grid-column:1/-1}
+  .tbl.stones .inp-sm,.tbl.stones select,.tbl.stones input{width:100%!important;min-width:0!important;max-width:none}
+  .tbl.stones .ppc{border-color:var(--tint-strong);background:#fff}
+  .tbl.stones .ppc.need{background:var(--amber-bg);border-color:var(--amber-line)}
+  .tbl.stones td.ell{max-width:none;white-space:normal;overflow:visible}
+  .tbl.stones tfoot tr{display:flex;flex-wrap:wrap;gap:6px 16px;padding:12px 10px;background:var(--tint);border-radius:8px;margin-top:6px}
+  .tbl.stones tfoot td{background:none;border:0;padding:0}
+  .tbl.stones tfoot td:nth-child(1){flex:1 1 100%}
+  .tbl.stones tfoot td:nth-child(2)::before{content:"Pcs "}
+  .tbl.stones tfoot td:nth-child(3)::before{content:"Total wt "}
+  .tbl.stones tfoot td:nth-child(5)::before{content:"$ total "}
+
+  /* Dialogs (preview, rate sheets) use the full width */
+  .dialog{max-width:100%}
+  .dialog-b{padding:12px}
+}
