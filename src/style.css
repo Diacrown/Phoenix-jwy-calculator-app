@@ -345,3 +345,8 @@ button,select,input,textarea{touch-action:manipulation}
   .dialog{max-width:100%}
   .dialog-b{padding:12px}
 }
+
+/* breakup summary tables */
+.sum-title{font-size:12px;color:var(--muted);font-weight:600;margin-bottom:8px}
+.sum-box{margin-bottom:14px}
+.sum-view{padding-bottom:2px}

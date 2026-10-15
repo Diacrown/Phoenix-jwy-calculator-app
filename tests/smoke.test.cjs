@@ -51,6 +51,7 @@ const readBuf = blob => new Promise(res => { const fr = new w.FileReader(); fr.o
   ok("breakdown tiles are Metal, Casting, Diamonds only", [...d.querySelectorAll(".metric-label")].map(e => e.textContent).join("|") === "Metal|Casting · Tier 1|Diamonds");
   ok("three total tiles: gross USD, AUD, USD", d.querySelectorAll(".totals-grid .tot").length === 3);
   const curSel = d.querySelector('select[aria-label="PDF currency"]');
+  ok("breakup summary shows a USD table and an AUD table with the final totals", d.querySelectorAll(".sum-box").length === 2 && /BREAKUP SUMMARY · USD/.test(d.querySelector(".sum-wrap").textContent) && /BREAKUP SUMMARY · AUD/.test(d.querySelector(".sum-wrap").textContent) && /1,610/.test(d.querySelector(".sum-wrap").textContent) && /2,300/.test(d.querySelector(".sum-wrap").textContent));
   const tiles = () => [...d.querySelectorAll(".totals-grid .tot")].map(t => !t.hidden);
   const setCur = v => { curSel.value = v; curSel.dispatchEvent(new d.defaultView.Event("input", { bubbles: true })); };
   ok("default USD only: gross + USD tiles shown, AUD tile hidden", tiles().join() === "true,true,false");

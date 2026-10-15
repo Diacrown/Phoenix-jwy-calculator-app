@@ -359,6 +359,11 @@ button,select,input,textarea{touch-action:manipulation}
   .dialog-b{padding:12px}
 }
 
+/* breakup summary tables */
+.sum-title{font-size:12px;color:var(--muted);font-weight:600;margin-bottom:8px}
+.sum-box{margin-bottom:14px}
+.sum-view{padding-bottom:2px}
+
 </style>
 <div id="app"></div>
 <script>
@@ -2299,6 +2304,62 @@ function buildQuotePdf(ctx) {
         h("button", { class: "btn ghost", type: "button", onclick: async () => { const ok = await copyText(JSON.stringify(snapshot()), host); flash(st, ok ? "Quote JSON copied" : "Copy blocked, select the text below", 6000); } }, "Copy quote JSON"), st), host), true);
   }
 
+  /* ---- breakup summary tables (USD and local currency): shown on screen, copied as a table, saved as a picture ---- */
+  const whole = n => Number(n || 0).toLocaleString("en-US", { maximumFractionDigits: 0 });
+  function summaryTables(q, j) {
+    const comps = componentList(q, j);
+    const heads = comps.map(([a]) => a.replace("Casting · ", ""));
+    const out = [{ cur: "USD", heads, vals: comps.map(([, v]) => "$" + whole(v)), gross: "$" + whole(q.finalUsd), grossNum: q.finalUsd }];
+    if (q.cur !== "USD") {
+      const ok = q.rate > 0 && q.finalLocal != null;
+      out.push({ cur: q.cur, heads, vals: comps.map(([, v]) => ok ? "$" + whole(v / q.rate) : "no rate"), gross: ok ? "$" + whole(q.finalLocal) : "no rate", grossNum: q.finalLocal });
+    }
+    return out;
+  }
+  const escH = t => String(t == null ? "" : t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  function sumHtml(d) {
+    const base = "border:1px solid #7f7f7f;padding:6px 14px;text-align:center;font:700 15px Arial,Helvetica,sans-serif;color:#000;";
+    const n = d.heads.length;
+    return '<table style="border-collapse:collapse;"><tbody>' +
+      '<tr><td colspan="' + n + '" style="' + base + 'background:#bfbfbf;vertical-align:bottom;height:34px;font-size:16px;">BREAKUP SUMMARY · ' + escH(d.cur) + '</td><td style="' + base + 'background:#fff;">GROSS<br>Total</td></tr>' +
+      '<tr>' + d.heads.map(t => '<td style="' + base + 'background:#d9d9d9;text-transform:uppercase;">' + escH(t) + '</td>').join("") + '<td style="' + base + 'background:#fff;">' + escH(d.cur) + '</td></tr>' +
+      '<tr>' + d.vals.map(t => '<td style="' + base + 'background:#d9d9d9;font-family:Georgia,serif;">' + escH(t) + '</td>').join("") + '<td style="' + base + 'background:#d9f2d0;">' + escH(d.gross.replace("$", "")) + '</td></tr></tbody></table>';
+  }
+  const sumText = d => ["BREAKUP SUMMARY " + d.cur + "\t".repeat(d.heads.length) + "GROSS Total", d.heads.join("\t") + "\t" + d.cur, d.vals.join("\t") + "\t" + d.gross.replace("$", "")].join("\n");
+  async function copySummary(d) {
+    try {
+      if (window.ClipboardItem) await navigator.clipboard.write([new ClipboardItem({ "text/html": new Blob([sumHtml(d)], { type: "text/html" }), "text/plain": new Blob([sumText(d)], { type: "text/plain" }) })]);
+      else await navigator.clipboard.writeText(sumText(d));
+      return "Copied, paste into an email or sheet";
+    } catch (e) { throw new Error("Copy was blocked by the browser. Use Save picture instead."); }
+  }
+  function summaryPng(d) {
+    const sc = 2, rowH = 38, colW = 140, grossW = 130, n = d.heads.length, W = n * colW + grossW, H = rowH * 3;
+    const cv = document.createElement("canvas"); cv.width = W * sc; cv.height = H * sc;
+    const g = cv.getContext("2d"); g.scale(sc, sc); g.lineWidth = 1; g.textAlign = "center"; g.textBaseline = "middle";
+    const cell = (x, y, w, hh, fill, text, font) => { g.fillStyle = fill; g.fillRect(x, y, w, hh); g.strokeStyle = "#7f7f7f"; g.strokeRect(x + .5, y + .5, w - 1, hh - 1); g.fillStyle = "#000"; g.font = font; g.fillText(text, x + w / 2, y + hh / 2); };
+    const B = "700 15px Arial,Helvetica,sans-serif", S = "700 16px Georgia,serif";
+    cell(0, 0, n * colW, rowH, "#bfbfbf", "BREAKUP SUMMARY · " + d.cur, "700 16px Arial,Helvetica,sans-serif");
+    cell(n * colW, 0, grossW, rowH, "#ffffff", "GROSS Total", B);
+    d.heads.forEach((t, i) => cell(i * colW, rowH, colW, rowH, "#d9d9d9", t.toUpperCase(), B));
+    cell(n * colW, rowH, grossW, rowH, "#ffffff", d.cur, B);
+    d.vals.forEach((t, i) => cell(i * colW, rowH * 2, colW, rowH, "#d9d9d9", t, S));
+    cell(n * colW, rowH * 2, grossW, rowH, "#d9f2d0", d.gross.replace("$", ""), B);
+    return new Promise((res, rej) => cv.toBlob(b => b ? res(b) : rej(new Error("Could not make the picture")), "image/png"));
+  }
+  function paintSummary(q) {
+    const j = S.job, host = ui.bk.sum;
+    host.replaceChildren(...summaryTables(q, j).map(d => {
+      const view = h("div", { class: "table-scroll sum-view" }); view.innerHTML = sumHtml(d);
+      const st = h("span", { class: "status-ok", role: "status" });
+      const run = async fn => { try { const m = await fn(); st.className = "status-ok"; flash(st, "✓ " + m, 5000); } catch (e) { st.className = "status-warn"; flash(st, (e && e.message) || "Couldn't finish", 0); } };
+      return h("div", { class: "sum-box" }, view,
+        h("div", { class: "toolbar", style: "margin-top:8px" },
+          h("button", { class: "small-btn", type: "button", onclick: () => run(() => copySummary(d)) }, "Copy " + d.cur + " table"),
+          h("button", { class: "small-btn", type: "button", onclick: () => run(async () => { await saveFile(filenameBase() + "_breakup_" + d.cur + ".png", await summaryPng(d)); return "Saved"; }) }, "Save " + d.cur + " picture"), st));
+    }));
+  }
+
   /* ---- 06 breakdown ---- */
   function buildBreakdown() {
     const j = S.job, bk = ui.bk = {};
@@ -2313,13 +2374,15 @@ function buildQuotePdf(ctx) {
     bk.exAmt = bind(h("input", { type: "number", step: "1", class: "inp-sm", placeholder: "0.00 USD", style: "width:100px", id: uid("exa"), "aria-label": "Additional charge amount in USD" }), j, "extraAmt");
     bk.g = h("div", { class: "v" }); bk.l = h("div", { class: "v" }); bk.ll = h("div", { class: "l" }); bk.u = h("div", { class: "v" }); bk.ul = h("div", { class: "l" }); bk.fx = h("div", { class: "fx" });
     bk.code = h("span", { class: "ssp-code" });
+    bk.sum = h("div", { class: "sum-wrap" });
     return h("div", { class: "card" }, sectionLabel("06", "Quote breakdown"), bk.grid, h("div", { class: "divider" }),
       h("div", { class: "adj" }, bk.ovLab, bk.ov, bk.ovULab, bk.ovU, bk.ovClear, h("div", { class: "divider-v" }), h("span", { class: "lab2" }, "Additional charges"), bk.exName, bk.exAmt, bk.exClear),
       h("div", { class: "totals-grid" },
         bk.tG = h("div", { class: "tot" }, h("div", { class: "l" }, "Gross total · USD"), bk.g),
         bk.tU = h("div", { class: "tot main" }, bk.ul, bk.u),
         bk.tL = h("div", { class: "tot main" }, bk.ll, bk.l, bk.fx)),
-      h("div", { class: "ssp-row" }, h("span", null, "SSP code"), bk.code, h("span", null, "The gross total written with your price code letters.")));
+      h("div", { class: "ssp-row" }, h("span", null, "SSP code"), bk.code, h("span", null, "The gross total written with your price code letters.")),
+      h("div", { class: "divider" }), h("div", { class: "lab2 sum-title" }, "Breakup summary (USD and AUD)"), bk.sum);
   }
   function paintBreakdown(q) {
     const j = S.job, bk = ui.bk;
@@ -2342,6 +2405,7 @@ function buildQuotePdf(ctx) {
     bk.l.textContent = finalText(q);
     bk.fx.textContent = q.cur === "USD" ? "" : "fx rate " + fmt(q.rate, 3) + " (" + q.cur + " → USD)";
     bk.code.textContent = q.code || "—";
+    paintSummary(q);
   }
 
   /* ---- 07 remarks ---- */
