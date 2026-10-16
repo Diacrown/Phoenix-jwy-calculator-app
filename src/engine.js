@@ -114,6 +114,43 @@ function decodeCode(code, R) {
   }).join("");
 }
 
+
+/* Live metal rates: parse the MetalRates tab of the rates Google Sheet (CSV).
+   Columns used: Metal Type (AU/PT/AG), PM Rate As On, PM Rate/Oz, NetRate/Gm, Wastage.
+   Same maths as the sheet and the JWY calculator: $/gm = PM rate per oz / 31.1035 x wastage. */
+function csvRows(text) {
+  const rows = []; let row = [], f = "", q = false;
+  const t = String(text || "").replace(/^﻿/, "");
+  for (let i = 0; i < t.length; i++) {
+    const c = t[i];
+    if (q) { if (c === '"') { if (t[i + 1] === '"') { f += '"'; i++; } else q = false; } else f += c; }
+    else if (c === '"') q = true;
+    else if (c === ",") { row.push(f); f = ""; }
+    else if (c === "\n" || c === "\r") { if (c === "\r" && t[i + 1] === "\n") i++; row.push(f); rows.push(row); row = []; f = ""; }
+    else f += c;
+  }
+  if (f !== "" || row.length) { row.push(f); rows.push(row); }
+  return rows;
+}
+const cellNum = v => { const n = parseFloat(String(v == null ? "" : v).replace(/[^0-9.\-]/g, "")); return Number.isFinite(n) ? n : 0; };
+function parseMetalRatesCsv(text) {
+  const rows = csvRows(text).filter(r => r.some(c => String(c).trim() !== ""));
+  if (rows.length < 2) return null;
+  const key = h => String(h).toLowerCase().replace(/[^a-z0-9]/g, "");
+  const head = rows[0].map(key), col = (...names) => { for (const n of names) { const i = head.indexOf(n); if (i >= 0) return i; } return -1; };
+  const iMetal = col("metaltype", "metal"), iOz = col("pmrateoz"), iAsOn = col("pmrateason", "rateason", "asof"), iNet = col("netrategm"), iWaste = col("wastage");
+  if (iMetal < 0 || iOz < 0) return null;
+  const map = { AU: "gold", PT: "platinum", AG: "silver" }, out = {};
+  rows.slice(1).forEach(r => {
+    const k = map[String(r[iMetal] || "").trim().toUpperCase()]; if (!k) return;
+    const oz = cellNum(r[iOz]), markup = iWaste >= 0 ? cellNum(r[iWaste]) : 0;
+    if (!(oz > 0) || !(markup > 0)) return;
+    const net = iNet >= 0 ? cellNum(r[iNet]) : 0;
+    out[k] = { oz, markup, gm: net > 0 ? net : Math.round(oz / 31.1035 * markup * 100) / 100, asOf: iAsOn >= 0 ? String(r[iAsOn] || "").trim() : "" };
+  });
+  return out.gold && out.platinum && out.silver ? out : null;
+}
+
 /* Phoenix tier pricing: gross = metal + tier charge + diamonds (+ additional charge).
    Casting, labor, setting and CAD are already inside the tier charge, so they are not added again.
    The local total is gross / X-to-USD rate, rounded up to the next 5 (JWY style). */
@@ -244,5 +281,5 @@ function parseOrderJson(text, CAT) {
 }
 
 if (typeof module !== "undefined") {
-  module.exports = { CATALOG, DEFAULT_RATES, quote, lineCalc, metalPerGm, tierCharge, sspPrice, encodeCode, decodeCode, convertWeight, lgdLookup, num, roundUp5, parseOrderJson };
+  module.exports = { parseMetalRatesCsv, CATALOG, DEFAULT_RATES, quote, lineCalc, metalPerGm, tierCharge, sspPrice, encodeCode, decodeCode, convertWeight, lgdLookup, num, roundUp5, parseOrderJson };
 }

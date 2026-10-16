@@ -182,12 +182,13 @@
     CHIPS.forEach(([k, f]) => {
       const el = ui.chips[k]; if (!el) return;
       const edited = JSON.stringify(f(S.rates)) !== JSON.stringify(f(DEFAULT_RATES));
+      if (k === "metalRates" && ui.spotSource === "live" && !ui.spotTouched) { el.className = "chip on"; el.textContent = "metalRates · live"; return; }
       el.className = "chip " + (edited ? "edited" : "on"); el.textContent = k + (edited ? " · edited" : "");
     });
   }
   function spotCells(s) {
-    const gm = numIn(s, "gm", { min: 0, cls: "inp-sm num" });
-    const recompute = () => { s.gm = Math.round(num(s.oz) / OZ * num(s.markup) * 100) / 100; gm.value = s.gm; };
+    const gm = numIn(s, "gm", { min: 0, cls: "inp-sm num", after: () => { ui.spotTouched = true; } });
+    const recompute = () => { ui.spotTouched = true; s.gm = Math.round(num(s.oz) / OZ * num(s.markup) * 100) / 100; gm.value = s.gm; };
     return [h("td", { class: "td" }, txtIn(s, "asOf", { class: "inp-sm" })), h("td", { class: "td" }, numIn(s, "oz", { min: 0, cls: "inp-sm num", after: recompute })),
       h("td", { class: "td" }, numIn(s, "markup", { min: 0, cls: "inp-sm num", after: recompute })), h("td", { class: "td" }, gm)];
   }
@@ -209,15 +210,39 @@
     ui.rateBtn = h("button", { class: "small-btn", type: "button", onclick: () => { ui.manualRates = !ui.manualRates; paintRateTable(); } }, "Enter rates manually");
     ui.totalG = h("b", null, "0.000");
     const c = h("div", { class: "card" },
-      h("div", { class: "row-between" }, sectionLabel("03", "Rate book"), h("div", { class: "rate-status" }, h("span", null, h("span", { class: "dot" }), "Rates from your Phoenix sheets, 28 Sep 2026"))),
+      h("div", { class: "row-between" }, sectionLabel("03", "Rate book"), h("div", { class: "rate-status" }, h("span", null, h("span", { class: "dot" }), ui.rateStatus = h("span", null, "Rates from your Phoenix sheets, 28 Sep 2026")))),
       chips,
-      h("p", { class: "sync-note" }, "Diamond prices, tiers, alloys, currency and location are built in from your Phoenix sheets. Only the metal rates can be edited here. Live Google Sheet sync needs the JWY calculator's server and is not part of this page."),
+      h("p", { class: "sync-note" }, "Diamond prices, tiers, alloys, currency and location are built in from your Phoenix sheets. The metal rates are read live from the MetalRates tab of the rates Google Sheet every few minutes, and can be edited here for this session."),
       h("div", { class: "row-between", style: "margin-top:10px" }, h("span", { class: "subhead" }, "Precious metal rates"), ui.rateBtn),
       h("div", { class: "table-scroll" }, h("table", { class: "tbl" },
         h("thead", null, h("tr", null, ["Metal", "As on", "PM rate/oz", "Markup", "$/gm"].map((t, i) => h("th", { class: i > 1 ? "r" : "" }, t)))), ui.rateBody)),
       h("div", { class: "total-gram" }, "Total gram weight: ", ui.totalG, " g"));
     paintRateTable();
     return c;
+  }
+
+  /* Live metal rates from the MetalRates tab of the rates Google Sheet (same sheet the JWY calculator reads) */
+  const SPOT_SHEET_URL = window.PHOENIX_SPOT_URL || "https://docs.google.com/spreadsheets/d/1wPI7Ujbc9F4GEarje0BbCnUXVYKwyCa_vyqtB3mbciE/gviz/tq?tqx=out:csv&gid=0";
+  const SPOT_POLL_MS = 5 * 60 * 1000;
+  function paintRateStatus() {
+    if (!ui.rateStatus) return;
+    const g = S.rates.spot.gold;
+    ui.rateStatus.textContent = ui.spotSource === "live" && !ui.spotTouched ? "Live from the rates sheet · gold as on " + (g.asOf || "latest")
+      : ui.spotTouched ? "Metal rates edited by hand (this session)"
+      : "Built-in rates, " + (g.asOf || "") + (ui.spotError ? " · couldn't reach the rates sheet" : "");
+  }
+  async function refreshSpot() {
+    if (ui.spotTouched || ui.manualRates) return;
+    try {
+      const res = await fetch(SPOT_SHEET_URL, { cache: "no-store" });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const live = parseMetalRatesCsv(await res.text());
+      if (!live) throw new Error("MetalRates tab not recognised");
+      if (ui.spotTouched || ui.manualRates) return; // the user started editing while we were fetching
+      ["gold", "platinum", "silver"].forEach(k => Object.assign(S.rates.spot[k], live[k]));
+      ui.spotSource = "live"; ui.spotError = "";
+      paintRateTable(); update(); paintRateStatus();
+    } catch (e) { ui.spotError = String((e && e.message) || e); paintRateStatus(); }
   }
 
   /* ---- 04 stone schedule ---- */
@@ -881,4 +906,5 @@
 
   shell();
   mountAll();
+  refreshSpot(); setInterval(refreshSpot, SPOT_POLL_MS);
 })();

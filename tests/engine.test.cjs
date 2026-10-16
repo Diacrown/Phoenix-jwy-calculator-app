@@ -3,7 +3,7 @@ const fs = require("fs");
 const dir = __dirname + "/../src";
 const src = fs.readFileSync(dir + "/data.js", "utf8") + "\n" + fs.readFileSync(dir + "/engine.js", "utf8");
 const m = { exports: {} };
-new Function("module", src + "\nmodule.exports = { CATALOG, DEFAULT_RATES, quote, lineCalc, metalPerGm, tierCharge, sspPrice, encodeCode, decodeCode, convertWeight, lgdLookup, num, roundUp5, parseOrderJson, CUSTOM };")(m);
+new Function("module", src + "\nmodule.exports = { parseMetalRatesCsv, CATALOG, DEFAULT_RATES, quote, lineCalc, metalPerGm, tierCharge, sspPrice, encodeCode, decodeCode, convertWeight, lgdLookup, num, roundUp5, parseOrderJson, CUSTOM };")(m);
 const E = m.exports;
 
 let fails = 0;
@@ -67,6 +67,16 @@ eq("USD override leaves AUD alone", q.finalLocal, 2300);
 job = sample(); job.override = "2500";
 q = E.quote(job, RR, E.CATALOG);
 eq("AUD override 2500 x 0.70 = 1750 carries to USD", q.finalUsd, 1750);
+
+console.log("-- live metal rates from the rates sheet (MetalRates tab CSV)");
+const csv = 'Rate Type,Metal Type,PM Rate As On,PM Rate/Oz,SpotRate,SpotSurcharge,NetRate/Gm,Wastage\r\nGold,AU,Thu 15 Oct 2026 PM,4152.25 /oz,4178.00 /oz,1.05,$146.85 /gm,1.1\r\nPlatinum,PT,  Thu 15 Oct 2026,"1,619.55 /oz",1637.50 /oz,1.05,$63.53 /gm,1.22\r\nPalladium,PD,  Thu 15 Oct 2026,1129.50 /oz,1133.50 /oz,1.05,$7.81 /gm,0.215\r\nSilver,AG,  Thu 15 Oct 2026,56.72 /oz,57.75 /oz,1.05,$2.28 /gm,1.25\r\n\r\nhttps://www.cooksongold.com/metalprices/\r\n';
+const live = E.parseMetalRatesCsv(csv);
+eq("gold oz", live.gold.oz, 4152.25); eq("gold markup is the sheet's wastage", live.gold.markup, 1.1); eq("gold $/gm from the sheet", live.gold.gm, 146.85);
+eq("platinum oz with thousands comma", live.platinum.oz, 1619.55); eq("platinum $/gm", live.platinum.gm, 63.53);
+eq("silver $/gm", live.silver.gm, 2.28); eq("as-on date kept", live.gold.asOf, "Thu 15 Oct 2026 PM");
+eq("net rate missing falls back to oz/31.1035 x wastage", E.parseMetalRatesCsv("Metal Type,PM Rate/Oz,Wastage\nAU,4152.25,1.1\nPT,1619.55,1.22\nAG,56.72,1.25").gold.gm, 146.85);
+eq("wrong tab is rejected", E.parseMetalRatesCsv("code,Shape\nRND,Round") === null ? 1 : 0, 1);
+eq("missing metal is rejected", E.parseMetalRatesCsv("Metal Type,PM Rate/Oz,Wastage\nAU,4152.25,1.1") === null ? 1 : 0, 1);
 
 console.log("-- override, extra charge, USD location");
 job = sample(); job.override = "2500"; job.extraAmt = "50";
