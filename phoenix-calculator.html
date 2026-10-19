@@ -1865,7 +1865,8 @@ function buildQuotePdf(ctx) {
       const live = parseMetalRatesCsv(await res.text());
       if (!live) throw new Error("MetalRates tab not recognised");
       if (ui.spotTouched || ui.manualRates) return; // the user started editing while we were fetching
-      ["gold", "platinum", "silver"].forEach(k => Object.assign(S.rates.spot[k], live[k]));
+      /* The sheet supplies the per-oz rate and date only; Phoenix keeps its own markups (gold 1.12, platinum 1.17, silver 1.17). */
+      ["gold", "platinum", "silver"].forEach(k => { const t = S.rates.spot[k]; t.oz = live[k].oz; t.asOf = live[k].asOf || t.asOf; t.gm = Math.round(t.oz / OZ * num(t.markup) * 100) / 100; });
       ui.spotSource = "live"; ui.spotError = "";
       paintRateTable(); update(); paintRateStatus();
     } catch (e) { ui.spotError = String((e && e.message) || e); paintRateStatus(); }
