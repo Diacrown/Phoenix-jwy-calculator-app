@@ -131,3 +131,8 @@ If a step fails, the message on the page names the missing setting. Netlify → 
 Tested here: all pricing, the PDF and GATI output, every button, the access-key flow, save/duplicate/search/reload against a real Postgres engine, email and Drive request shapes, and that the functions bundle with esbuild (Netlify's bundler) and fail with clear messages when a service is missing.
 
 Not tested, because it needs your accounts: the live Netlify Database and Blobs, a real Resend send, and a real Google sign-in and upload. Step 6 above is that test.
+
+
+## Sharing the access key with your team
+
+Anyone who opens the calculator with a link ending in `#key=YOUR_TEAM_KEY` is signed in automatically on that device: the key is stored in the browser and removed from the address bar. Example: `https://your-site.netlify.app/#key=YOUR_TEAM_KEY`. Send this link only to people who should be able to save to the database, Drive and email.

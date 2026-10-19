@@ -740,7 +740,7 @@
     return h("div", { class: "card" },
       h("div", { class: "toolbar" }, sectionLabel("05", "Quotes"), stage, div(), variant, currencySel, dl, dlSt, pv, div(), sync, syncSt, drive, driveSt, gati, gatiSt, emailBtn, emailBox),
       h("p", { class: "hint" }, WEB
-        ? "Sync to DB saves the PDF and the quote to the team database. Save to Drive uploads the PDF to the shared Drive folder. Email sends the PDF to your customer. The first save or email asks for the team access key."
+        ? "Sync to DB saves the PDF and the quote to the team database. Save to Drive uploads the PDF to the shared Drive folder. Email sends the PDF to your customer. Saving and email ask once for the team access key (get it from your admin); it is remembered on this device."
         : "Sync to DB saves the quote to this page's shared database. Save to Drive and Email use your connected Google Drive and Gmail. Sync to DB, Save to Drive and Email work only when the page is opened from claude.ai."));
   }
   function openPreview() {
@@ -764,11 +764,13 @@
     return out;
   }
   const escH = t => String(t == null ? "" : t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-  function sumHtml(d) {
-    const base = "border:1px solid #7f7f7f;padding:6px 14px;text-align:center;font:700 15px Arial,Helvetica,sans-serif;color:#000;";
+  /* compact = the on-screen version: fills exactly one total tile, fixed columns, small type. The copied/saved version keeps its natural size. */
+  function sumHtml(d, compact) {
+    const base = compact ? "border:1px solid #7f7f7f;padding:5px 3px;text-align:center;font:700 12px Arial,Helvetica,sans-serif;color:#000;overflow-wrap:anywhere;"
+      : "border:1px solid #7f7f7f;padding:6px 14px;text-align:center;font:700 15px Arial,Helvetica,sans-serif;color:#000;";
     const n = d.heads.length;
-    return '<table style="border-collapse:collapse;"><tbody>' +
-      '<tr><td colspan="' + n + '" style="' + base + 'background:#bfbfbf;vertical-align:bottom;height:34px;font-size:16px;">BREAKUP SUMMARY · ' + escH(d.cur) + '</td><td style="' + base + 'background:#fff;">GROSS<br>Total</td></tr>' +
+    return '<table style="border-collapse:collapse;' + (compact ? 'width:100%;table-layout:fixed;' : '') + '"><tbody>' +
+      '<tr><td colspan="' + n + '" style="' + base + 'background:#bfbfbf;vertical-align:bottom;height:' + (compact ? '28px' : '34px') + ';font-size:' + (compact ? '13px' : '16px') + ';">BREAKUP SUMMARY · ' + escH(d.cur) + '</td><td style="' + base + 'background:#fff;">GROSS<br>Total</td></tr>' +
       '<tr>' + d.heads.map(t => '<td style="' + base + 'background:#d9d9d9;text-transform:uppercase;">' + escH(t) + '</td>').join("") + '<td style="' + base + 'background:#fff;">' + escH(d.cur) + '</td></tr>' +
       '<tr>' + d.vals.map(t => '<td style="' + base + 'background:#d9d9d9;font-family:Georgia,serif;">' + escH(t) + '</td>').join("") + '<td style="' + base + 'background:#d9f2d0;">' + escH(d.gross.replace("$", "")) + '</td></tr></tbody></table>';
   }
@@ -797,13 +799,13 @@
   function paintSummary(q) {
     const j = S.job, host = ui.bk.sum;
     host.replaceChildren(...summaryTables(q, j).map(d => {
-      const view = h("div", { class: "table-scroll sum-view" }); view.innerHTML = sumHtml(d);
+      const view = h("div", { class: "sum-view" }); view.innerHTML = sumHtml(d, true);
       const st = h("span", { class: "status-ok", role: "status" });
       const run = async fn => { try { const m = await fn(); st.className = "status-ok"; flash(st, "✓ " + m, 5000); } catch (e) { st.className = "status-warn"; flash(st, (e && e.message) || "Couldn't finish", 0); } };
       return h("div", { class: "sum-box" }, view,
         h("div", { class: "toolbar", style: "margin-top:8px" },
-          h("button", { class: "small-btn", type: "button", onclick: () => run(() => copySummary(d)) }, "Copy " + d.cur + " table"),
-          h("button", { class: "small-btn", type: "button", onclick: () => run(async () => { await saveFile(filenameBase() + "_breakup_" + d.cur + ".png", await summaryPng(d)); return "Saved"; }) }, "Save " + d.cur + " picture"), st));
+          h("button", { class: "small-btn", type: "button", onclick: () => run(() => copySummary(d)) }, "Copy table"),
+          h("button", { class: "small-btn", type: "button", onclick: () => run(async () => { await saveFile(filenameBase() + "_breakup_" + d.cur + ".png", await summaryPng(d)); return "Saved"; }) }, "Save picture"), st));
     }));
   }
 
@@ -821,7 +823,7 @@
     bk.exAmt = bind(h("input", { type: "number", step: "1", class: "inp-sm", placeholder: "0.00 USD", style: "width:100px", id: uid("exa"), "aria-label": "Additional charge amount in USD" }), j, "extraAmt");
     bk.g = h("div", { class: "v" }); bk.l = h("div", { class: "v" }); bk.ll = h("div", { class: "l" }); bk.u = h("div", { class: "v" }); bk.ul = h("div", { class: "l" }); bk.fx = h("div", { class: "fx" });
     bk.code = h("span", { class: "ssp-code" });
-    bk.sum = h("div", { class: "sum-wrap" });
+    bk.sum = h("div", { class: "sum-wrap totals-grid" });
     return h("div", { class: "card" }, sectionLabel("06", "Quote breakdown"), bk.grid, h("div", { class: "divider" }),
       h("div", { class: "adj" }, bk.ovLab, bk.ov, bk.ovULab, bk.ovU, bk.ovClear, h("div", { class: "divider-v" }), h("span", { class: "lab2" }, "Additional charges"), bk.exName, bk.exAmt, bk.exClear),
       h("div", { class: "totals-grid" },

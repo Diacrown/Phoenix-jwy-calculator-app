@@ -16,6 +16,15 @@
   /* ---------- small helpers ---------- */
   const lsGet = k => { try { return localStorage.getItem(k) || ""; } catch (e) { return ""; } };
   const lsSet = (k, v) => { try { if (v) localStorage.setItem(k, v); else localStorage.removeItem(k); } catch (e) { /* storage blocked */ } };
+  /* A shared link ending in #key=<team key> signs a browser in without typing: the key is stored here and removed from the address bar. */
+  (function adoptKeyFromLink() {
+    try {
+      const m = /[#&]key=([^&]+)/.exec(location.hash || "");
+      if (!m) return;
+      lsSet(KEY_NAME, decodeURIComponent(m[1]));
+      history.replaceState(null, "", location.pathname + location.search);
+    } catch (e) { /* ignore a malformed link */ }
+  })();
   const fail = (message, code) => { const e = new Error(message); if (code) e.code = code; return e; };
 
   /* ---------- access key prompt (the functions are locked with APP_ACCESS_KEY) ---------- */
