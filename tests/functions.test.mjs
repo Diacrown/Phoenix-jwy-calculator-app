@@ -51,7 +51,7 @@ const quote = (o = {}) => Object.assign({ filenameBase: "4376_B00630_Q1_20260930
   ok("email is locked too", (await j(await api.email(req("send-quote-email", { method: "POST", body: { to: "a@b.co", filenameBase: "x", pdfBase64: pdf }, key: null })))).status === 401);
   const open = make({});
   const locked = await j(await open.search(req("search-quotes?recent=1", { key: null })));
-  ok("no APP_ACCESS_KEY configured -> fails closed (503)", locked.status === 503 && /APP_ACCESS_KEY/.test(locked.body.error));
+  ok("no APP_ACCESS_KEY configured -> open, like the JWY calculator", locked.status === 200);
   const dev = make({ NETLIFY_DEV: "true" });
   ok("netlify dev works without a key", (await j(await dev.search(req("search-quotes?recent=1", { key: null })))).status === 200);
 

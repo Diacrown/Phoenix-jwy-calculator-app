@@ -62,11 +62,10 @@ export function createQuoteApi(deps) {
     return sql;
   };
 
-  // Every action except config needs the team access key. Fail closed: with no key configured the functions stay locked,
-  // otherwise anyone who finds the site could send email from your Resend account or fill the database.
+  // The team access key is optional, like the JWY calculator: with APP_ACCESS_KEY unset the functions are open and nobody is asked
+  // for anything. Set APP_ACCESS_KEY later and every save, Drive upload and email needs it again, with no code change.
   const locked = req => {
-    if (env.NETLIFY_DEV === "true") return null;
-    if (!env.APP_ACCESS_KEY) return reply(503, { error: "APP_ACCESS_KEY is not set on this site. Add it in Netlify > Site configuration > Environment variables, then redeploy." });
+    if (env.NETLIFY_DEV === "true" || !env.APP_ACCESS_KEY) return null;
     if (!same(req.headers.get("x-access-key") || "", env.APP_ACCESS_KEY)) return reply(401, { error: "Access key required." });
     return null;
   };

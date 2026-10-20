@@ -38,7 +38,9 @@ git push -u origin main
 3. Deploy. The first deploy also provisions the site's database and applies `netlify/database/migrations/` before publishing.
 4. Open the site URL. The calculator loads; Download, Preview and Export to GATI already work. Sync to DB, Email and Drive show setup messages until you finish the steps below.
 
-## 3. Set the access key (do this before sharing the link)
+## 3. Access key (optional, off by default)
+
+Like the JWY calculator, Phoenix works with no access key: Sync to DB, Save to Drive and Email run straight from the page. If you later want to lock them, set `APP_ACCESS_KEY` below and redeploy; people are then asked for it once. Be aware that with no key, anyone who has the site URL can save quotes and send email from your Resend account.
 
 Netlify → **Project configuration → Environment variables → Add a variable**:
 
@@ -106,7 +108,7 @@ Open the site and go through this once:
 1. **Load order data** → choose `samples/sample-order.json` → the job, metal and stones fill in.
 2. Click a tier; the totals change.
 3. **Download** → a PDF opens and looks right. **Export to GATI** → an xlsx downloads.
-4. Type a Job # and Item # → **Sync to DB** → enter the access key → "Synced". Click it again: it should refuse and ask you to bump the stage. Set the stage to Q2 and sync again.
+4. Type a Job # and Item # → **Sync to DB** → "Synced". Click it again: it should refuse and ask you to bump the stage. Set the stage to Q2 and sync again.
 5. Type the Job # in the search box → the quote appears → click it → the form restores.
 6. **Email** → your own address → Send twice (confirm) → the PDF arrives.
 7. **Save to Drive** → Google sign-in → the PDF appears in the folder.

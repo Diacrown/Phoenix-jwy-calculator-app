@@ -148,7 +148,7 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
   mode = "normal";
   const savedKey = env.APP_ACCESS_KEY; env.APP_ACCESS_KEY = "";
   btn("Sync to DB").click(); await wait(400);
-  ok("server without APP_ACCESS_KEY is locked and says why", /APP_ACCESS_KEY is not set/.test(text()));
+  ok("server without APP_ACCESS_KEY is open: no lock message and no key dialog", !/APP_ACCESS_KEY is not set|Access key required/.test(text()) && !d.querySelector("dialog[open]"));
   env.APP_ACCESS_KEY = savedKey;
 
   ok("no runtime errors", errors.length === 0, errors.join("; "));

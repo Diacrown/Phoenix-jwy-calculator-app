@@ -741,7 +741,7 @@
     return h("div", { class: "card" },
       h("div", { class: "toolbar" }, sectionLabel("05", "Quotes"), stage, div(), variant, currencySel, dl, dlSt, pv, div(), sync, syncSt, drive, driveSt, gati, gatiSt, emailBtn, emailBox),
       h("p", { class: "hint" }, WEB
-        ? "Sync to DB saves the PDF and the quote to the team database. Save to Drive uploads the PDF to the shared Drive folder. Email sends the PDF to your customer. Saving and email ask once for the team access key (get it from your admin); it is remembered on this device."
+        ? "Sync to DB saves the PDF and the quote to the team database. Save to Drive uploads the PDF to the shared Drive folder. Email sends the PDF to your customer. Sync to DB, Save to Drive and Email work straight from here."
         : "Sync to DB saves the quote to this page's shared database. Save to Drive and Email use your connected Google Drive and Gmail. Sync to DB, Save to Drive and Email work only when the page is opened from claude.ai."));
   }
   function openPreview() {
