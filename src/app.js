@@ -183,6 +183,7 @@
       const el = ui.chips[k]; if (!el) return;
       const edited = JSON.stringify(f(S.rates)) !== JSON.stringify(f(DEFAULT_RATES));
       if (k === "metalRates" && ui.spotSource === "live" && !ui.spotTouched) { el.className = "chip on"; el.textContent = "metalRates · live"; return; }
+      if (k === "currencyRates" && ui.fxSource === "live") { el.className = "chip on"; el.textContent = "currencyRates · live"; return; }
       el.className = "chip " + (edited ? "edited" : "on"); el.textContent = k + (edited ? " · edited" : "");
     });
   }
@@ -230,6 +231,8 @@
     ui.rateStatus.textContent = ui.spotSource === "live" && !ui.spotTouched ? "Live from the rates sheet · gold as on " + (g.asOf || "latest")
       : ui.spotTouched ? "Metal rates edited by hand (this session)"
       : "Built-in rates, " + (g.asOf || "") + (ui.spotError ? " · couldn't reach the rates sheet" : "");
+    if (ui.fxSource === "live") ui.rateStatus.textContent += " · exchange rates live";
+    else if (ui.fxError) ui.rateStatus.textContent += " · couldn't reach the exchange rates, using built-in";
   }
   async function refreshSpot() {
     if (ui.spotTouched || ui.manualRates) return;
@@ -244,6 +247,29 @@
       ui.spotSource = "live"; ui.spotError = "";
       paintRateTable(); update(); paintRateStatus();
     } catch (e) { ui.spotError = String((e && e.message) || e); paintRateStatus(); }
+  }
+
+  /* Live exchange rates (USD value of one unit of each currency). Free public services, no key: the first that answers wins. */
+  const FX_URLS = [window.PHOENIX_FX_URL, "https://open.er-api.com/v6/latest/USD", "https://api.frankfurter.dev/v1/latest?base=USD"].filter(Boolean);
+  const FX_POLL_MS = 30 * 60 * 1000;
+  async function refreshFx() {
+    let lastErr = "";
+    for (const url of FX_URLS) {
+      try {
+        const res = await fetch(url, { cache: "no-store" });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const data = await res.json();
+        const per = data.rates || (data.conversion_rates);   // currency units per 1 USD
+        if (!per) throw new Error("no rates in reply");
+        let n = 0;
+        S.rates.fx.forEach(f => { if (f.cur !== "USD" && per[f.cur] > 0) { f.rate = Math.round(100000 / per[f.cur]) / 100000; n++; } });
+        if (!n) throw new Error("no matching currencies");
+        ui.fxSource = "live"; ui.fxError = ""; ui.fxAsOf = data.time_last_update_utc ? String(data.time_last_update_utc).slice(0, 16) : (data.date || "");
+        update(); paintChips(); paintRateStatus();
+        return;
+      } catch (e) { lastErr = String((e && e.message) || e); }
+    }
+    ui.fxError = lastErr; paintRateStatus();
   }
 
   /* ---- 04 stone schedule ---- */
@@ -853,7 +879,7 @@
     bk.g.textContent = money(q.gross);
     bk.ll.textContent = q.locCode + " total · " + q.cur + (q.hasOverride ? "  (calculated: " + (q.local == null ? "no rate" : localMoney(q.local, q.cur)) + ")" : "");
     bk.l.textContent = finalText(q);
-    bk.fx.textContent = q.cur === "USD" ? "" : "fx rate " + fmt(q.rate, 3) + " (" + q.cur + " → USD)";
+    bk.fx.textContent = q.cur === "USD" ? "" : "fx rate " + fmt(q.rate, ui.fxSource === "live" ? 5 : 3) + " (" + q.cur + " → USD)" + (ui.fxSource === "live" ? " · live" : "");
     bk.code.textContent = q.code || "—";
     paintSummary(q);
   }
@@ -910,4 +936,5 @@
   shell();
   mountAll();
   refreshSpot(); setInterval(refreshSpot, SPOT_POLL_MS);
+  refreshFx(); setInterval(refreshFx, FX_POLL_MS);
 })();
