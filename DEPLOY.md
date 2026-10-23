@@ -148,4 +148,6 @@ Phoenix reads its stone prices (natural round grid, natural fancy grid, lab-grow
 | --- | --- |
 | `JWY_APP_URL` | The web address of the deployed JWY calculator, for example `https://your-jwy-site.netlify.app` (no trailing path) |
 
+The same setting also feeds the **metal rates**: gold, platinum and silver per-oz rates come from the JWY calculator's live metal-rates service (spot plus the PM snapshot), with Phoenix's own markups applied. If JWY cannot be reached, Phoenix falls back to the Google Sheet's MetalRates tab, then to built-in rates.
+
 Until it is set, or if the JWY site cannot be reached, Phoenix keeps its built-in stone prices and the rate panel says "stone prices: built-in". A price that JWY has no value for (a blank cell) falls back to Phoenix's own price. Metal rates and exchange rates are fetched separately, as before.

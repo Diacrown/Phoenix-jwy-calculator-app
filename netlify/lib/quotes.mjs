@@ -103,6 +103,22 @@ export function createQuoteApi(deps) {
       } catch (err) { return reply(200, { live: false, reason: "Could not reach the JWY data service (" + ((err && err.message) || err) + ")." }); }
     },
 
+    // Metal rates, read live from the JWY calculator's metal-rates function (spot, plus the PM snapshot at the LBMA fix), so the two calculators agree.
+    // Only the per-oz rates and their date are passed on; Phoenix applies its own markups. Same JWY_APP_URL as stonePrices.
+    metalRates: async () => {
+      const base = String(env.JWY_APP_URL || "").trim().replace(/\/+$/, "");
+      if (!base) return reply(200, { live: false, reason: "JWY_APP_URL is not set on this site." });
+      try {
+        const res = await (deps.fetch || fetch)(base + "/.netlify/functions/metal-rates", { headers: { accept: "application/json" }, signal: AbortSignal.timeout(8000) });
+        if (!res.ok) return reply(200, { live: false, reason: "The JWY metal rates service answered " + res.status + "." });
+        const d = await res.json(), r = d.rates || {};
+        const pick = k => (r[k] && Number(r[k].pmRateOz) > 0 ? { oz: Number(r[k].pmRateOz), asOf: String(r[k].asOf || "") } : null);
+        const gold = pick("AU"), platinum = pick("PT"), silver = pick("AG");
+        if (!gold || !platinum || !silver) return reply(200, { live: false, reason: "The JWY metal rates service sent incomplete rates." });
+        return reply(200, { live: true, gold, platinum, silver, source: d.source || "live", fetchedAt: d.fetchedAt || new Date().toISOString() });
+      } catch (err) { return reply(200, { live: false, reason: "Could not reach the JWY metal rates service (" + ((err && err.message) || err) + ")." }); }
+    },
+
     // Sync to DB. One row per Job # + Item # + Stage; a repeat is refused so the user bumps the stage (Q1 -> Q2).
     save: guarded(async req => {
       if (req.method !== "POST") return reply(405, { error: "Method not allowed" });

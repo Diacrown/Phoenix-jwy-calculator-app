@@ -229,15 +229,33 @@
   function paintRateStatus() {
     if (!ui.rateStatus) return;
     const g = S.rates.spot.gold;
-    ui.rateStatus.textContent = ui.spotSource === "live" && !ui.spotTouched ? "Live from the rates sheet · gold as on " + (g.asOf || "latest")
+    ui.rateStatus.textContent = ui.spotSource === "live" && !ui.spotTouched ? "Live from " + (ui.spotVia || "the rates sheet") + " · gold as on " + (g.asOf || "latest")
       : ui.spotTouched ? "Metal rates edited by hand (this session)"
       : "Built-in rates, " + (g.asOf || "") + (ui.spotError ? " · couldn't reach the rates sheet" : "");
     ui.rateStatus.textContent += ui.stoneSource === "live" ? " · stone prices live from JWY" : (ui.stoneError ? " · stone prices: built-in (" + ui.stoneError.replace(/\.$/, "") + ")" : "");
     if (ui.fxSource === "live") ui.rateStatus.textContent += " · exchange rates live";
     else if (ui.fxError) ui.rateStatus.textContent += " · couldn't reach the exchange rates, using built-in";
   }
+  /* Preferred source: the JWY calculator's live metal rates, through this site's own function (needs JWY_APP_URL). The sheet is the fallback. */
+  const METAL_URL = window.PHOENIX_METAL_URL || "/.netlify/functions/metal-rates";
+  async function spotFromJwy() {
+    try {
+      const res = await fetch(METAL_URL, { cache: "no-store" });
+      if (!res.ok) return null;
+      const d = await res.json();
+      return d && d.live && d.gold && d.platinum && d.silver ? d : null;
+    } catch (e) { return null; }
+  }
   async function refreshSpot() {
     if (ui.spotTouched || ui.manualRates) return;
+    const jwy = await spotFromJwy();
+    if (jwy) {
+      if (ui.spotTouched || ui.manualRates) return;
+      ["gold", "platinum", "silver"].forEach(k => { const t = S.rates.spot[k]; t.oz = jwy[k].oz; t.asOf = jwy[k].asOf || t.asOf; t.gm = Math.round(t.oz / OZ * num(t.markup) * 100) / 100; });
+      ui.spotSource = "live"; ui.spotVia = "the JWY calculator"; ui.spotError = "";
+      paintRateTable(); update(); paintRateStatus();
+      return;
+    }
     try {
       const res = await fetch(SPOT_SHEET_URL, { cache: "no-store" });
       if (!res.ok) throw new Error("HTTP " + res.status);
@@ -246,7 +264,7 @@
       if (ui.spotTouched || ui.manualRates) return; // the user started editing while we were fetching
       /* The sheet supplies the per-oz rate and date only; Phoenix keeps its own markups (gold 1.12, platinum 1.17, silver 1.17). */
       ["gold", "platinum", "silver"].forEach(k => { const t = S.rates.spot[k]; t.oz = live[k].oz; t.asOf = live[k].asOf || t.asOf; t.gm = Math.round(t.oz / OZ * num(t.markup) * 100) / 100; });
-      ui.spotSource = "live"; ui.spotError = "";
+      ui.spotSource = "live"; ui.spotVia = "the rates sheet"; ui.spotError = "";
       paintRateTable(); update(); paintRateStatus();
     } catch (e) { ui.spotError = String((e && e.message) || e); paintRateStatus(); }
   }

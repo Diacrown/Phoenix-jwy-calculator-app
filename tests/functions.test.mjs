@@ -65,6 +65,14 @@ const quote = (o = {}) => Object.assign({ filenameBase: "4376_B00630_Q1_20260930
   ok("JWY unreachable -> live:false, no error", down.status === 200 && down.body.live === false);
   const bad = await j(await jwy(async () => new Response(JSON.stringify({ data: { naturalPrices: { R38: { x: -1 } } } }), { status: 200 })).stonePrices(req("stone-prices", { key: null })));
   ok("invalid tables are rejected", bad.body.live === false);
+  console.log("-- metal rates from the JWY metal-rates function");
+  let metalUrl = "";
+  const jm = f => createQuoteApi({ getSql: () => sql, getStore: () => store, sendMail: async () => ({}), fetch: f, env: { JWY_APP_URL: "https://jwy.test" } });
+  const mr = await j(await jm(async u => { metalUrl = u; return new Response(JSON.stringify({ source: "live", fetchedAt: "2026-10-23T08:00:00Z", rates: { AU: { pmRateOz: 4147.8, asOf: "Fri 23 Oct 2026 PM" }, PT: { pmRateOz: 1644.7, asOf: "x" }, AG: { pmRateOz: 57.64, asOf: "x" }, PD: { pmRateOz: 1000 } } }), { status: 200 }); }).metalRates(req("metal-rates", { key: null })));
+  ok("gold, platinum and silver per-oz rates come through", mr.body.live === true && mr.body.gold.oz === 4147.8 && mr.body.gold.asOf === "Fri 23 Oct 2026 PM" && mr.body.platinum.oz === 1644.7 && mr.body.silver.oz === 57.64 && metalUrl === "https://jwy.test/.netlify/functions/metal-rates", JSON.stringify(mr.body));
+  ok("metal rates: JWY_APP_URL unset -> live:false", (await j(await make({}).metalRates(req("metal-rates", { key: null })))).body.live === false);
+  ok("metal rates: incomplete reply -> live:false", (await j(await jm(async () => new Response(JSON.stringify({ rates: { AU: { pmRateOz: 1 } } }), { status: 200 })).metalRates(req("metal-rates", { key: null })))).body.live === false);
+  ok("metal rates: JWY error -> live:false", (await j(await jm(async () => new Response("{}", { status: 502 })).metalRates(req("metal-rates", { key: null })))).body.live === false);
   const dev = make({ NETLIFY_DEV: "true" });
   ok("netlify dev works without a key", (await j(await dev.search(req("search-quotes?recent=1", { key: null })))).status === 200);
 
