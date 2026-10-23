@@ -138,3 +138,14 @@ Not tested, because it needs your accounts: the live Netlify Database and Blobs,
 ## Sharing the access key with your team
 
 Anyone who opens the calculator with a link ending in `#key=YOUR_TEAM_KEY` is signed in automatically on that device: the key is stored in the browser and removed from the address bar. Example: `https://your-site.netlify.app/#key=YOUR_TEAM_KEY`. Send this link only to people who should be able to save to the database, Drive and email.
+
+
+## Stone prices from the JWY calculator
+
+Phoenix reads its stone prices (natural round grid, natural fancy grid, lab-grown bands) live from the JWY calculator's own price service, so a price changed there changes Phoenix too. Add one setting under Environment variables and redeploy:
+
+| Key | Value |
+| --- | --- |
+| `JWY_APP_URL` | The web address of the deployed JWY calculator, for example `https://your-jwy-site.netlify.app` (no trailing path) |
+
+Until it is set, or if the JWY site cannot be reached, Phoenix keeps its built-in stone prices and the rate panel says "stone prices: built-in". A price that JWY has no value for (a blank cell) falls back to Phoenix's own price. Metal rates and exchange rates are fetched separately, as before.

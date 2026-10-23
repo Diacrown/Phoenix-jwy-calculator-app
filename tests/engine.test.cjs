@@ -173,5 +173,21 @@ eq("bad file rejected", E.parseOrderJson("{}", E.CATALOG).ok ? 1 : 0, 0);
 }
 
 
+// ---- live JWY stone prices (R.stone) ----
+{
+  const RS = JSON.parse(JSON.stringify(E.DEFAULT_RATES));
+  const ln = (code, extra) => L("Mined", code, Object.assign({ pcs: "1", q: "TW SI2" }, extra || {}));
+  eq("built-in: R38 TW SI2 is 830", E.lineCalc(ln("RND038W"), RS, E.CATALOG).autoPpc, 830);
+  RS.stone = { natural: { R38: { "TW SI2": 770 } }, fancy: { "PRN2.0M": { "TW VS": 630, "TW SI3": 500 } },
+    lgd: [{ shape: "RND", minCt: 0.01, maxCt: 0.49, dvvs2: 111, dvs1: 99, nonCert: 100 }, { shape: "RND & FANCY", minCt: 1.5, maxCt: 1.99, dvvs2: 200, dvs1: 170, nonCert: null }] };
+  eq("live JWY grid wins: R38 TW SI2 is 770", E.lineCalc(ln("RND038W"), RS, E.CATALOG).autoPpc, 770);
+  eq("quality missing in the live grid falls back to Phoenix", E.lineCalc(ln("RND038W", { q: "TW VS" }), RS, E.CATALOG).autoPpc, 1080);
+  eq("live fancy price by size code and grade", E.lineCalc(ln("PRN2.0M", { q: "TW SI3" }), RS, E.CATALOG).autoPpc, 500);
+  eq("fancy grade not offered uses the first offered grade (JWY rule)", E.lineCalc(ln("PRN2.0M", { q: "TW SI1" }), RS, E.CATALOG).autoPpc, 630);
+  eq("live lab-grown non-cert band", E.lineCalc(L("Lab grown", "RND038W", { pcs: "1", lgd: "NONCERT" }), RS, E.CATALOG).autoPpc, 100);
+  eq("live lab-grown D/VVS2 band", E.lineCalc(L("Lab grown", "RND038W", { pcs: "1", lgd: "D/VVS2" }), RS, E.CATALOG).autoPpc, 111);
+  eq("lab-grown with no live price keeps Phoenix's", E.lineCalc(L("Lab grown", "RND050W", { pcs: "1", lgd: "SSP" }), RS, E.CATALOG).autoPpc, E.lineCalc(L("Lab grown", "RND050W", { pcs: "1", lgd: "SSP" }), JSON.parse(JSON.stringify(E.DEFAULT_RATES)), E.CATALOG).autoPpc);
+}
+
 console.log(fails ? "\n" + fails + " FAILED" : "\nAll checks passed");
 process.exit(fails ? 1 : 0);

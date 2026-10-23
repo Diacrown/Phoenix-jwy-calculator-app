@@ -938,10 +938,30 @@ function tierCharge(name, grams, R) {
 
 function sspPrice(group, quality, R) {
   if (!group) return 0;
+  const lv = R.stone && R.stone.natural && R.stone.natural[group];   // live JWY grid first, Phoenix's own price as the fallback
+  if (lv && num(lv[quality]) > 0) return num(lv[quality]);
   const row = R.ssp[group];
   const i = R.sspCols.indexOf(quality);
   if (!row || i < 0) return 0;
   return num(row[i]);
+}
+
+/* Live JWY price tables (R.stone). Each returns 0 when JWY has no price, and the caller then uses Phoenix's own. */
+function fancyLive(code, quality, R) {
+  const row = R.stone && R.stone.fancy && R.stone.fancy[code];
+  if (!row) return 0;
+  const order = ["TW VS", "TW SI3", "TW SI"];
+  const grades = Object.keys(row).filter(g => num(row[g]) > 0).sort((a, b) => order.indexOf(a) - order.indexOf(b));
+  if (!grades.length) return 0;
+  return num(row[grades.includes(quality) ? quality : grades[0]]);   // same grade rule as the JWY calculator
+}
+function lgdLive(shapeClass, ct, grade, R) {
+  const bands = R.stone && R.stone.lgd;
+  if (!bands) return 0;
+  const shp = shapeClass === "Round" ? "RND" : "FANCY", w = num(ct);
+  const b = bands.find(x => (x.shape === shp || x.shape === "RND & FANCY") && w >= x.minCt && w <= x.maxCt);
+  if (!b) return 0;
+  return num(grade === "D/VVS2" ? b.dvvs2 : grade === "D/VS" ? b.dvs1 : b.nonCert);
 }
 
 function lgdLookup(shape, cert, ct, col) {
@@ -985,11 +1005,14 @@ function lineCalc(line, R, CAT) {
   if (isMined) {
     quality = qCustom ? String(line.qText || "").trim() : (line.q || "");
     if (!qCustom && c && group) auto = sspPrice(group, line.q, R);
+    else if (!qCustom && c && !group) auto = fancyLive(c[0], line.q, R);
   } else if (isLgd) {
     const g = line.lgd || "SSP";
     const opt = LGD_GRADE_OPTS.find(o => o[0] === g);
     quality = qCustom ? String(line.qText || "").trim() : (opt ? opt[1] : g);
+    const live = qCustom ? 0 : lgdLive(shapeClass, wtPc, g, R);
     if (qCustom) auto = 0;
+    else if (live > 0) auto = live;   // JWY's lab-grown bands (non-cert, D/VVS2, D/VS)
     else if (g === "SSP") auto = c && group ? sspPrice(group, "LGD", R) : 0;
     else {
       const r = g === "NONCERT" ? lgdLookup(shapeClass, "Non-cert", wtPc, "D/VVS2") : lgdLookup(shapeClass, "Cert", wtPc, g);
@@ -1809,6 +1832,7 @@ function buildQuotePdf(ctx) {
       const el = ui.chips[k]; if (!el) return;
       const edited = JSON.stringify(f(S.rates)) !== JSON.stringify(f(DEFAULT_RATES));
       if (k === "metalRates" && ui.spotSource === "live" && !ui.spotTouched) { el.className = "chip on"; el.textContent = "metalRates · live"; return; }
+      if ((k === "naturalPrices" || k === "labGrownPrices") && ui.stoneSource === "live") { el.className = "chip on"; el.textContent = k + " · live (JWY)"; return; }
       if (k === "currencyRates" && ui.fxSource === "live") { el.className = "chip on"; el.textContent = "currencyRates · live"; return; }
       el.className = "chip " + (edited ? "edited" : "on"); el.textContent = k + (edited ? " · edited" : "");
     });
@@ -1857,6 +1881,7 @@ function buildQuotePdf(ctx) {
     ui.rateStatus.textContent = ui.spotSource === "live" && !ui.spotTouched ? "Live from the rates sheet · gold as on " + (g.asOf || "latest")
       : ui.spotTouched ? "Metal rates edited by hand (this session)"
       : "Built-in rates, " + (g.asOf || "") + (ui.spotError ? " · couldn't reach the rates sheet" : "");
+    ui.rateStatus.textContent += ui.stoneSource === "live" ? " · stone prices live from JWY" : (ui.stoneError ? " · stone prices: built-in (" + ui.stoneError.replace(/\.$/, "") + ")" : "");
     if (ui.fxSource === "live") ui.rateStatus.textContent += " · exchange rates live";
     else if (ui.fxError) ui.rateStatus.textContent += " · couldn't reach the exchange rates, using built-in";
   }
@@ -1896,6 +1921,20 @@ function buildQuotePdf(ctx) {
       } catch (e) { lastErr = String((e && e.message) || e); }
     }
     ui.fxError = lastErr; paintRateStatus();
+  }
+
+  /* Stone prices follow the JWY calculator: the site's own function reads JWY's data service (needs JWY_APP_URL on the site). */
+  const STONE_URL = window.PHOENIX_STONE_URL || "/.netlify/functions/stone-prices";
+  async function refreshStone() {
+    try {
+      const res = await fetch(STONE_URL, { cache: "no-store" });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const d = await res.json();
+      if (!d || !d.live) { ui.stoneSource = ""; ui.stoneError = (d && d.reason) || "not available"; paintRateStatus(); return; }
+      S.rates.stone = { natural: d.naturalPrices || null, fancy: d.fancyPrices || null, lgd: d.labGrownPrices || null };
+      ui.stoneSource = "live"; ui.stoneError = "";
+      update(); paintChips(); paintRateStatus();
+    } catch (e) { ui.stoneError = String((e && e.message) || e); paintRateStatus(); }
   }
 
   /* ---- 04 stone schedule ---- */
@@ -2563,6 +2602,7 @@ function buildQuotePdf(ctx) {
   mountAll();
   refreshSpot(); setInterval(refreshSpot, SPOT_POLL_MS);
   refreshFx(); setInterval(refreshFx, FX_POLL_MS);
+  refreshStone(); setInterval(refreshStone, SPOT_POLL_MS);
 })();
 
 </script>

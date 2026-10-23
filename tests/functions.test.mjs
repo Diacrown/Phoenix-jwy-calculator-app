@@ -52,6 +52,19 @@ const quote = (o = {}) => Object.assign({ filenameBase: "4376_B00630_Q1_20260930
   const open = make({});
   const locked = await j(await open.search(req("search-quotes?recent=1", { key: null })));
   ok("no APP_ACCESS_KEY configured -> open, like the JWY calculator", locked.status === 200);
+  console.log("-- stone prices from the JWY data service");
+  const jwy = fetchImpl => createQuoteApi({ getSql: () => sql, getStore: () => store, sendMail: async () => ({}), fetch: fetchImpl, env: { JWY_APP_URL: "https://jwy.test/" } });
+  const good = jwy(async url => { jwyUrl = url; return new Response(JSON.stringify({ data: { naturalPrices: { R38: { "TW SI2": 770 } }, fancyPrices: { "PRN2.0M": { "TW VS": 630 } }, labGrownPrices: [{ shape: "RND", minCt: 0.01, maxCt: 0.49, nonCert: 100 }], alloys: [] } }), { status: 200 }); });
+  let jwyUrl = "";
+  const sp = await j(await good.stonePrices(req("stone-prices", { key: null })));
+  ok("stone prices read from the JWY app-data function", sp.status === 200 && sp.body.live === true && sp.body.naturalPrices.R38["TW SI2"] === 770 && jwyUrl === "https://jwy.test/.netlify/functions/app-data", JSON.stringify(sp.body));
+  ok("only price tables are passed on", !("alloys" in sp.body) && sp.body.labGrownPrices.length === 1);
+  const unset = await j(await make({}).stonePrices(req("stone-prices", { key: null })));
+  ok("JWY_APP_URL unset -> live:false with a reason", unset.status === 200 && unset.body.live === false && /JWY_APP_URL/.test(unset.body.reason));
+  const down = await j(await jwy(async () => { throw new Error("boom"); }).stonePrices(req("stone-prices", { key: null })));
+  ok("JWY unreachable -> live:false, no error", down.status === 200 && down.body.live === false);
+  const bad = await j(await jwy(async () => new Response(JSON.stringify({ data: { naturalPrices: { R38: { x: -1 } } } }), { status: 200 })).stonePrices(req("stone-prices", { key: null })));
+  ok("invalid tables are rejected", bad.body.live === false);
   const dev = make({ NETLIFY_DEV: "true" });
   ok("netlify dev works without a key", (await j(await dev.search(req("search-quotes?recent=1", { key: null })))).status === 200);
 

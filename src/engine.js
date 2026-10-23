@@ -26,10 +26,30 @@ function tierCharge(name, grams, R) {
 
 function sspPrice(group, quality, R) {
   if (!group) return 0;
+  const lv = R.stone && R.stone.natural && R.stone.natural[group];   // live JWY grid first, Phoenix's own price as the fallback
+  if (lv && num(lv[quality]) > 0) return num(lv[quality]);
   const row = R.ssp[group];
   const i = R.sspCols.indexOf(quality);
   if (!row || i < 0) return 0;
   return num(row[i]);
+}
+
+/* Live JWY price tables (R.stone). Each returns 0 when JWY has no price, and the caller then uses Phoenix's own. */
+function fancyLive(code, quality, R) {
+  const row = R.stone && R.stone.fancy && R.stone.fancy[code];
+  if (!row) return 0;
+  const order = ["TW VS", "TW SI3", "TW SI"];
+  const grades = Object.keys(row).filter(g => num(row[g]) > 0).sort((a, b) => order.indexOf(a) - order.indexOf(b));
+  if (!grades.length) return 0;
+  return num(row[grades.includes(quality) ? quality : grades[0]]);   // same grade rule as the JWY calculator
+}
+function lgdLive(shapeClass, ct, grade, R) {
+  const bands = R.stone && R.stone.lgd;
+  if (!bands) return 0;
+  const shp = shapeClass === "Round" ? "RND" : "FANCY", w = num(ct);
+  const b = bands.find(x => (x.shape === shp || x.shape === "RND & FANCY") && w >= x.minCt && w <= x.maxCt);
+  if (!b) return 0;
+  return num(grade === "D/VVS2" ? b.dvvs2 : grade === "D/VS" ? b.dvs1 : b.nonCert);
 }
 
 function lgdLookup(shape, cert, ct, col) {
@@ -73,11 +93,14 @@ function lineCalc(line, R, CAT) {
   if (isMined) {
     quality = qCustom ? String(line.qText || "").trim() : (line.q || "");
     if (!qCustom && c && group) auto = sspPrice(group, line.q, R);
+    else if (!qCustom && c && !group) auto = fancyLive(c[0], line.q, R);
   } else if (isLgd) {
     const g = line.lgd || "SSP";
     const opt = LGD_GRADE_OPTS.find(o => o[0] === g);
     quality = qCustom ? String(line.qText || "").trim() : (opt ? opt[1] : g);
+    const live = qCustom ? 0 : lgdLive(shapeClass, wtPc, g, R);
     if (qCustom) auto = 0;
+    else if (live > 0) auto = live;   // JWY's lab-grown bands (non-cert, D/VVS2, D/VS)
     else if (g === "SSP") auto = c && group ? sspPrice(group, "LGD", R) : 0;
     else {
       const r = g === "NONCERT" ? lgdLookup(shapeClass, "Non-cert", wtPc, "D/VVS2") : lgdLookup(shapeClass, "Cert", wtPc, g);

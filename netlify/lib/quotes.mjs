@@ -85,6 +85,24 @@ export function createQuoteApi(deps) {
       locked: !!env.APP_ACCESS_KEY
     }),
 
+    // Stone prices, read live from the JWY calculator's own data service (public, read-only), so Phoenix follows JWY's price tables.
+    // The browser cannot read that site directly (no CORS), so this function fetches it server to server.
+    // Needs JWY_APP_URL (the JWY calculator's web address). Unset or unreachable -> { live: false } and Phoenix keeps its built-in prices.
+    stonePrices: async () => {
+      const base = String(env.JWY_APP_URL || "").trim().replace(/\/+$/, "");
+      if (!base) return reply(200, { live: false, reason: "JWY_APP_URL is not set on this site." });
+      try {
+        const res = await (deps.fetch || fetch)(base + "/.netlify/functions/app-data", { headers: { accept: "application/json" }, signal: AbortSignal.timeout(8000) });
+        if (!res.ok) return reply(200, { live: false, reason: "The JWY data service answered " + res.status + "." });
+        const d = (await res.json()).data || {};
+        const grid = v => v && typeof v === "object" && !Array.isArray(v) && Object.keys(v).length > 0 && Object.values(v).every(g => g && typeof g === "object" && Object.values(g).every(x => typeof x === "number" && isFinite(x) && x > 0));
+        const bands = v => Array.isArray(v) && v.length > 0 && v.every(b => b && typeof b.shape === "string" && Number.isFinite(b.minCt) && Number.isFinite(b.maxCt));
+        const out = { live: true, fetchedAt: new Date().toISOString(), naturalPrices: grid(d.naturalPrices) ? d.naturalPrices : null, fancyPrices: grid(d.fancyPrices) ? d.fancyPrices : null, labGrownPrices: bands(d.labGrownPrices) ? d.labGrownPrices : null };
+        if (!out.naturalPrices && !out.fancyPrices && !out.labGrownPrices) return reply(200, { live: false, reason: "The JWY data service sent no usable price tables." });
+        return reply(200, out);
+      } catch (err) { return reply(200, { live: false, reason: "Could not reach the JWY data service (" + ((err && err.message) || err) + ")." }); }
+    },
+
     // Sync to DB. One row per Job # + Item # + Stage; a repeat is refused so the user bumps the stage (Q1 -> Q2).
     save: guarded(async req => {
       if (req.method !== "POST") return reply(405, { error: "Method not allowed" });

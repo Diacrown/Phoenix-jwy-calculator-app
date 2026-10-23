@@ -183,6 +183,7 @@
       const el = ui.chips[k]; if (!el) return;
       const edited = JSON.stringify(f(S.rates)) !== JSON.stringify(f(DEFAULT_RATES));
       if (k === "metalRates" && ui.spotSource === "live" && !ui.spotTouched) { el.className = "chip on"; el.textContent = "metalRates · live"; return; }
+      if ((k === "naturalPrices" || k === "labGrownPrices") && ui.stoneSource === "live") { el.className = "chip on"; el.textContent = k + " · live (JWY)"; return; }
       if (k === "currencyRates" && ui.fxSource === "live") { el.className = "chip on"; el.textContent = "currencyRates · live"; return; }
       el.className = "chip " + (edited ? "edited" : "on"); el.textContent = k + (edited ? " · edited" : "");
     });
@@ -231,6 +232,7 @@
     ui.rateStatus.textContent = ui.spotSource === "live" && !ui.spotTouched ? "Live from the rates sheet · gold as on " + (g.asOf || "latest")
       : ui.spotTouched ? "Metal rates edited by hand (this session)"
       : "Built-in rates, " + (g.asOf || "") + (ui.spotError ? " · couldn't reach the rates sheet" : "");
+    ui.rateStatus.textContent += ui.stoneSource === "live" ? " · stone prices live from JWY" : (ui.stoneError ? " · stone prices: built-in (" + ui.stoneError.replace(/\.$/, "") + ")" : "");
     if (ui.fxSource === "live") ui.rateStatus.textContent += " · exchange rates live";
     else if (ui.fxError) ui.rateStatus.textContent += " · couldn't reach the exchange rates, using built-in";
   }
@@ -270,6 +272,20 @@
       } catch (e) { lastErr = String((e && e.message) || e); }
     }
     ui.fxError = lastErr; paintRateStatus();
+  }
+
+  /* Stone prices follow the JWY calculator: the site's own function reads JWY's data service (needs JWY_APP_URL on the site). */
+  const STONE_URL = window.PHOENIX_STONE_URL || "/.netlify/functions/stone-prices";
+  async function refreshStone() {
+    try {
+      const res = await fetch(STONE_URL, { cache: "no-store" });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const d = await res.json();
+      if (!d || !d.live) { ui.stoneSource = ""; ui.stoneError = (d && d.reason) || "not available"; paintRateStatus(); return; }
+      S.rates.stone = { natural: d.naturalPrices || null, fancy: d.fancyPrices || null, lgd: d.labGrownPrices || null };
+      ui.stoneSource = "live"; ui.stoneError = "";
+      update(); paintChips(); paintRateStatus();
+    } catch (e) { ui.stoneError = String((e && e.message) || e); paintRateStatus(); }
   }
 
   /* ---- 04 stone schedule ---- */
@@ -937,4 +953,5 @@
   mountAll();
   refreshSpot(); setInterval(refreshSpot, SPOT_POLL_MS);
   refreshFx(); setInterval(refreshFx, FX_POLL_MS);
+  refreshStone(); setInterval(refreshStone, SPOT_POLL_MS);
 })();
