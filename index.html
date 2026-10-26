@@ -1880,12 +1880,12 @@ function buildQuotePdf(ctx) {
     const g = S.rates.spot.gold;
     ui.rateStatus.textContent = ui.spotSource === "live" && !ui.spotTouched ? "Live from " + (ui.spotVia || "the rates sheet") + " · gold as on " + (g.asOf || "latest")
       : ui.spotTouched ? "Metal rates edited by hand (this session)"
-      : "Built-in rates, " + (g.asOf || "") + (ui.spotError ? " · couldn't reach the rates sheet" : "");
+      : "Built-in rates, " + (g.asOf || "") + (ui.spotError ? " · rates sheet not used: " + ui.spotError : "");
     ui.rateStatus.textContent += ui.stoneSource === "live" ? " · stone prices live from JWY" : (ui.stoneError ? " · stone prices: built-in (" + ui.stoneError.replace(/\.$/, "") + ")" : "");
     if (ui.fxSource === "live") ui.rateStatus.textContent += " · exchange rates live";
     else if (ui.fxError) ui.rateStatus.textContent += " · couldn't reach the exchange rates, using built-in";
   }
-  /* Preferred source: the JWY calculator's live metal rates, through this site's own function (needs JWY_APP_URL). The sheet is the fallback. */
+  /* Second source, used when the sheet cannot be read: the JWY calculator's live metal rates, through this site's own function (needs JWY_APP_URL). */
   const METAL_URL = window.PHOENIX_METAL_URL || "/.netlify/functions/metal-rates";
   async function spotFromJwy() {
     try {
@@ -1897,25 +1897,25 @@ function buildQuotePdf(ctx) {
   }
   async function refreshSpot() {
     if (ui.spotTouched || ui.manualRates) return;
-    const jwy = await spotFromJwy();
-    if (jwy) {
-      if (ui.spotTouched || ui.manualRates) return;
-      ["gold", "platinum", "silver"].forEach(k => { const t = S.rates.spot[k]; t.oz = jwy[k].oz; t.asOf = jwy[k].asOf || t.asOf; t.gm = Math.round(t.oz / OZ * num(t.markup) * 100) / 100; });
-      ui.spotSource = "live"; ui.spotVia = "the JWY calculator"; ui.spotError = "";
+    const apply = (src, via) => {
+      if (ui.spotTouched || ui.manualRates) return;   // the user started editing while we were fetching
+      /* The source supplies the per-oz rate and date only; Phoenix keeps its own markups (gold 1.12, platinum 1.17, silver 1.17). */
+      ["gold", "platinum", "silver"].forEach(k => { const t = S.rates.spot[k]; t.oz = src[k].oz; t.asOf = src[k].asOf || t.asOf; t.gm = Math.round(t.oz / OZ * num(t.markup) * 100) / 100; });
+      ui.spotSource = "live"; ui.spotVia = via; ui.spotError = "";
       paintRateTable(); update(); paintRateStatus();
-      return;
-    }
+    };
+    // 1) your data table (the MetalRates tab), 2) the JWY calculator's live service, 3) built-in rates
+    let why = "";
     try {
       const res = await fetch(SPOT_SHEET_URL, { cache: "no-store" });
-      if (!res.ok) throw new Error("HTTP " + res.status);
+      if (!res.ok) throw new Error(res.status === 401 || res.status === 403 || res.status === 404 ? "the sheet is not shared with 'Anyone with the link' (HTTP " + res.status + ")" : "HTTP " + res.status);
       const live = parseMetalRatesCsv(await res.text());
-      if (!live) throw new Error("MetalRates tab not recognised");
-      if (ui.spotTouched || ui.manualRates) return; // the user started editing while we were fetching
-      /* The sheet supplies the per-oz rate and date only; Phoenix keeps its own markups (gold 1.12, platinum 1.17, silver 1.17). */
-      ["gold", "platinum", "silver"].forEach(k => { const t = S.rates.spot[k]; t.oz = live[k].oz; t.asOf = live[k].asOf || t.asOf; t.gm = Math.round(t.oz / OZ * num(t.markup) * 100) / 100; });
-      ui.spotSource = "live"; ui.spotVia = "the rates sheet"; ui.spotError = "";
-      paintRateTable(); update(); paintRateStatus();
-    } catch (e) { ui.spotError = String((e && e.message) || e); paintRateStatus(); }
+      if (!live) throw new Error("the first tab is not the MetalRates table (gold, platinum, silver rows with PM Rate/Oz and Wastage)");
+      apply(live, "your rates sheet"); return;
+    } catch (e) { why = String((e && e.message) || e); if (/failed to fetch|networkerror|load failed/i.test(why)) why = "the browser could not reach Google Sheets (blocked or sheet not shared)"; }
+    const jwy = await spotFromJwy();
+    if (jwy) { apply(jwy, "the JWY calculator"); return; }
+    ui.spotError = why; paintRateStatus();
   }
 
   /* Live exchange rates (USD value of one unit of each currency). Free public services, no key: the first that answers wins. */
